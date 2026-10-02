@@ -4,7 +4,7 @@ import { Cpu, BookOpen, Pin, Calculator, Award, FileText, Zap } from 'lucide-rea
 export function Navbar({ activeTab, setActiveTab, onOpenReportModal }) {
   const navItems = [
     { id: 'overview', label: 'Board Specs', icon: Cpu },
-    { id: 'labs', label: 'Lab Experiments (1-8)', icon: BookOpen },
+    { id: 'labs', label: 'Lab Experiments (1-26)', icon: BookOpen },
     { id: 'pinout', label: 'Pinout Explorer', icon: Pin },
     { id: 'calculators', label: 'Calculators', icon: Calculator },
     { id: 'quizzes', label: 'Quizzes & Assessment', icon: Award }

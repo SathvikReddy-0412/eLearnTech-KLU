@@ -28,15 +28,41 @@ export function LabViewer() {
   // Render simulator matching lab
   const renderSimulator = () => {
     switch (lab.id) {
-      case 'lab-1': return <GpioSimulator />;
-      case 'lab-2': return <ButtonInterruptSimulator />;
-      case 'lab-3': return <AdcSimulator />;
-      case 'lab-4': return <PwmOscilloscope />;
-      case 'lab-5': return <UartTerminalSimulator />;
-      case 'lab-6': return <CryptoBenchmarkSimulator />;
-      case 'lab-7': return <RtosSchedulerSimulator />;
-      case 'lab-8': return <DacSignalSimulator />;
-      default: return <GpioSimulator />;
+      case 'lab-1':
+      case 'lab-2':
+      case 'lab-3':
+      case 'lab-5':
+        return <GpioSimulator />;
+      case 'lab-4':
+      case 'lab-6':
+        return <ButtonInterruptSimulator />;
+      case 'lab-7':
+      case 'lab-10':
+      case 'lab-12':
+      case 'lab-21':
+        return <DacSignalSimulator />; // LCD/Display simulator
+      case 'lab-8':
+      case 'lab-9':
+      case 'lab-11':
+      case 'lab-13':
+        return <UartTerminalSimulator />;
+      case 'lab-14':
+      case 'lab-15':
+      case 'lab-16':
+      case 'lab-17':
+        return <PwmOscilloscope />;
+      case 'lab-18':
+      case 'lab-19':
+      case 'lab-20':
+      case 'lab-22':
+      case 'lab-23':
+        return <AdcSimulator />;
+      case 'lab-24':
+      case 'lab-25':
+      case 'lab-26':
+        return <CryptoBenchmarkSimulator />; // CAN / Bus protocol diagnostics simulator
+      default:
+        return <GpioSimulator />;
     }
   };
 
