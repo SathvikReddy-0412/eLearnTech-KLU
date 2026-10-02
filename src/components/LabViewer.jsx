@@ -1,20 +1,10 @@
 import React, { useState } from 'react';
 import { labExperiments } from '../data/labData';
-import {
-  GpioSimulator,
-  ButtonInterruptSimulator,
-  AdcSimulator,
-  PwmOscilloscope,
-  UartTerminalSimulator,
-  CryptoBenchmarkSimulator,
-  RtosSchedulerSimulator,
-  DacSignalSimulator
-} from './Simulators/LabSimulators';
-import { BookOpen, Settings, Code, PlayCircle, HelpCircle, Copy, CheckCircle2, ChevronRight, Clock, Award } from 'lucide-react';
+import { BookOpen, Settings, Code, Copy, CheckCircle2, ChevronRight, Clock, Award } from 'lucide-react';
 
 export function LabViewer() {
   const [selectedLabId, setSelectedLabId] = useState(labExperiments[0].id);
-  const [activeTab, setActiveTab] = useState('theory'); // 'theory', 'cube', 'code', 'sim', 'quiz'
+  const [activeTab, setActiveTab] = useState('theory'); // 'theory', 'cube', 'code'
   const [copied, setCopied] = useState(false);
 
   const lab = labExperiments.find((l) => l.id === selectedLabId) || labExperiments[0];
@@ -25,51 +15,10 @@ export function LabViewer() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Render simulator matching lab
-  const renderSimulator = () => {
-    switch (lab.id) {
-      case 'lab-1':
-      case 'lab-2':
-      case 'lab-3':
-      case 'lab-5':
-        return <GpioSimulator />;
-      case 'lab-4':
-      case 'lab-6':
-        return <ButtonInterruptSimulator />;
-      case 'lab-7':
-      case 'lab-10':
-      case 'lab-12':
-      case 'lab-21':
-        return <DacSignalSimulator />; // LCD/Display simulator
-      case 'lab-8':
-      case 'lab-9':
-      case 'lab-11':
-      case 'lab-13':
-        return <UartTerminalSimulator />;
-      case 'lab-14':
-      case 'lab-15':
-      case 'lab-16':
-      case 'lab-17':
-        return <PwmOscilloscope />;
-      case 'lab-18':
-      case 'lab-19':
-      case 'lab-20':
-      case 'lab-22':
-      case 'lab-23':
-        return <AdcSimulator />;
-      case 'lab-24':
-      case 'lab-25':
-      case 'lab-26':
-        return <CryptoBenchmarkSimulator />; // CAN / Bus protocol diagnostics simulator
-      default:
-        return <GpioSimulator />;
-    }
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-mono">
       {/* Horizontal Lab Selection Scrollbar */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-md overflow-x-auto font-mono text-xs">
+      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-md overflow-x-auto text-xs">
         <div className="flex gap-2 min-w-max">
           {labExperiments.map((l) => (
             <button
@@ -105,30 +54,30 @@ export function LabViewer() {
         {/* Lab Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-800 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-cyan-400 font-bold mb-1">
+            <div className="flex items-center gap-2 text-xs text-cyan-400 font-bold mb-1">
               <span>EXPERIMENT #{lab.number}</span>
               <span>•</span>
               <span className="text-amber-400">{lab.difficulty}</span>
               <span>•</span>
               <span className="text-slate-400 flex items-center gap-1"><Clock className="w-3 h-3" /> {lab.estimatedTime}</span>
             </div>
-            <h2 className="text-2xl font-black text-slate-100 font-mono">{lab.title}</h2>
-            <p className="text-xs text-slate-400 font-mono mt-1">{lab.subtitle}</p>
+            <h2 className="text-2xl font-black text-slate-100">{lab.title}</h2>
+            <p className="text-xs text-slate-400 mt-1">{lab.subtitle}</p>
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 font-mono text-xs overflow-x-auto">
+          <div className="flex gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-xs overflow-x-auto">
             <button
               onClick={() => setActiveTab('theory')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-lg font-bold transition flex items-center gap-1.5 ${
                 activeTab === 'theory' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5" /> Theory
+              <BookOpen className="w-3.5 h-3.5" /> Theory & Pinout
             </button>
             <button
               onClick={() => setActiveTab('cube')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-lg font-bold transition flex items-center gap-1.5 ${
                 activeTab === 'cube' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -136,19 +85,11 @@ export function LabViewer() {
             </button>
             <button
               onClick={() => setActiveTab('code')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+              className={`px-3.5 py-2 rounded-lg font-bold transition flex items-center gap-1.5 ${
                 activeTab === 'code' ? 'bg-cyan-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Code className="w-3.5 h-3.5" /> C Code
-            </button>
-            <button
-              onClick={() => setActiveTab('sim')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-                activeTab === 'sim' ? 'bg-emerald-500 text-slate-950 shadow-md font-extrabold' : 'text-emerald-400 hover:text-emerald-300'
-              }`}
-            >
-              <PlayCircle className="w-3.5 h-3.5" /> Simulator
+              <Code className="w-3.5 h-3.5" /> C Source Code
             </button>
           </div>
         </div>
@@ -157,7 +98,7 @@ export function LabViewer() {
 
         {/* 1. THEORY & OVERVIEW */}
         {activeTab === 'theory' && (
-          <div className="mt-6 space-y-6 font-mono text-xs">
+          <div className="mt-6 space-y-6 text-xs">
             {/* Learning Objectives */}
             <div className="bg-slate-950 p-5 rounded-xl border border-slate-800">
               <h3 className="text-sm font-bold text-cyan-400 mb-3 flex items-center gap-2">
@@ -212,7 +153,7 @@ export function LabViewer() {
 
         {/* 2. CUBEIDE SETUP GUIDE */}
         {activeTab === 'cube' && (
-          <div className="mt-6 space-y-4 font-mono text-xs">
+          <div className="mt-6 space-y-4 text-xs">
             <div className="bg-slate-950 p-5 rounded-xl border border-slate-800">
               <h3 className="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2">
                 <Settings className="w-4 h-4 text-cyan-400" /> STM32CubeMX Graphical Pinout & Clock Configuration
@@ -233,7 +174,7 @@ export function LabViewer() {
 
         {/* 3. C CODE SNIPPET */}
         {activeTab === 'code' && (
-          <div className="mt-6 space-y-4 font-mono text-xs">
+          <div className="mt-6 space-y-4 text-xs">
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 relative">
               <div className="flex justify-between items-center pb-3 border-b border-slate-800 mb-3">
                 <span className="text-xs text-slate-400 font-bold flex items-center gap-2">
@@ -248,17 +189,10 @@ export function LabViewer() {
                 </button>
               </div>
 
-              <pre className="text-cyan-300 overflow-x-auto p-2 leading-relaxed text-xs font-mono max-h-[500px]">
+              <pre className="text-cyan-300 overflow-x-auto p-2 leading-relaxed text-xs font-mono max-h-[550px]">
                 {lab.codeSnippet}
               </pre>
             </div>
-          </div>
-        )}
-
-        {/* 4. VIRTUAL HARDWARE SIMULATOR */}
-        {activeTab === 'sim' && (
-          <div className="mt-6">
-            {renderSimulator()}
           </div>
         )}
       </div>
