@@ -15,3 +15,11 @@ An interactive Microcontroller & Embedded Systems Learning Portal for the **STM3
 - Tailwind CSS
 - Lucide React Icons
 
+## Mentor
+- **Dr. Aswinkumer S V**
+
+## Contributors
+- **Sathvik**
+- **Harshitha**
+- **Deepthi**
+

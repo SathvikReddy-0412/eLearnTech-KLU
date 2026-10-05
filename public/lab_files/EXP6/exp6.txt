@@ -1,0 +1,32 @@
+int main(void)
+{
+  /* MCU Configuration--------------------------------------------------------*/
+
+  HAL_Init();
+
+  SystemClock_Config();
+
+  MX_GPIO_Init();
+  MX_ETH_Init();
+  MX_USART3_UART_Init();
+  MX_USB_OTG_FS_PCD_Init();
+
+  /* USER CODE BEGIN 2 */
+
+  /* Relay initially OFF */
+  HAL_GPIO_WritePin(RELAY_IN_GPIO_Port, RELAY_IN_Pin, GPIO_PIN_SET);
+
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  while (1)
+{
+    // Relay ON
+    HAL_GPIO_WritePin(RELAY_IN_GPIO_Port, RELAY_IN_Pin, GPIO_PIN_RESET);
+    HAL_Delay(2000);
+
+    // Relay OFF
+    HAL_GPIO_WritePin(RELAY_IN_GPIO_Port, RELAY_IN_Pin, GPIO_PIN_SET);
+    HAL_Delay(2000);
+}
+}

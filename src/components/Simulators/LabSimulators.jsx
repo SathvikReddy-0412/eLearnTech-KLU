@@ -831,3 +831,29 @@ export function DacSignalSimulator() {
     </div>
   );
 }
+
+/* Main Export Component for Lab Viewer */
+export function LabSimulators({ labId, labNumber }) {
+  if (labNumber === 1 || labNumber === 2 || labNumber === 4 || labNumber === 5 || labNumber === 6) {
+    return <GpioSimulator />;
+  }
+  if (labNumber === 8 || labNumber === 9 || labNumber === 10) {
+    return <UartSimulator />;
+  }
+  if (labNumber === 14 || labNumber === 15 || labNumber === 19 || labNumber === 20 || labNumber === 21) {
+    return <AdcSimulator />;
+  }
+  if (labNumber === 3 || labNumber === 11 || labNumber === 12 || labNumber === 13) {
+    return <TimerSimulator />;
+  }
+  if (labNumber === 22 || labNumber === 23) {
+    return <FreeRtosSimulator />;
+  }
+  if (labNumber === 24) {
+    return <CryptoSimulator />;
+  }
+  if (labNumber === 26) {
+    return <EthernetSimulator />;
+  }
+  return <DacSimulator />;
+}

@@ -38,12 +38,27 @@ export function LabReportModal({ isOpen, onClose }) {
         {/* Printable Document Box */}
         <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-6 text-xs" id="printable-report">
           {/* Institution Header */}
-          <div className="text-center border-b border-slate-800 pb-4">
-            <div className="text-cyan-400 font-extrabold text-sm flex justify-center items-center gap-2">
-              <Cpu className="w-5 h-5 text-cyan-400" /> {university.toUpperCase()}
+          <div className="text-center border-b border-slate-800 pb-4 space-y-3">
+            <div className="flex justify-center items-center gap-3">
+              <img
+                src="/logo-icon-transparent.png"
+                alt="eLearnTech @kl Emblem"
+                className="h-12 w-auto object-contain filter drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]"
+              />
+              <div className="text-left">
+                <div className="font-mono font-black text-slate-100 text-lg tracking-tight flex items-center gap-1.5">
+                  eLearnTech<span className="text-cyan-400 font-extrabold">@kl</span>
+                </div>
+                <div className="text-[10px] font-mono text-slate-400 font-semibold tracking-wide">
+                  TECHNOLOGY ENABLED LEARNING & GLOBAL ENGAGEMENT
+                </div>
+              </div>
             </div>
-            <div className="text-slate-300 font-bold mt-1">{courseName}</div>
-            <div className="text-slate-500 text-[10px] mt-0.5">eLearnTech@KLU — STM32 NUCLEO-H753ZI LABORATORY MANUAL</div>
+            <div className="text-cyan-400 font-extrabold text-sm tracking-wide">
+              {university.toUpperCase()}
+            </div>
+            <div className="text-slate-300 font-bold">{courseName}</div>
+            <div className="text-slate-500 text-[10px]">STM32 NUCLEO-H753ZI LABORATORY EVALUATION MANUAL</div>
           </div>
 
           {/* Editable Student Metadata Form */}

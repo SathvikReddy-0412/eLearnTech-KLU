@@ -1,0 +1,401 @@
+EXPERIMENT 8 — Procedure for STM32H753ZI UART Communication
+
+
+
+1. Create/Open the STM32CubeIDE Project
+Open STM32CubeIDE.
+Open your STM32H753ZI Nucleo project.
+Open the .ioc file by double-clicking it.
+Select Pinout & Configuration.
+
+
+
+2. Configure USART3
+
+In the left-side Categories panel, select:
+
+Connectivity → USART3
+
+Set:
+
+Mode → Asynchronous
+
+Check the pin assignment:
+
+Pin	Function
+PD8	USART3_TX
+PD9	USART3_RX
+
+The CubeMX pinout should show:
+
+PD8 → USART3_TX
+PD9 → USART3_RX
+Do not assign these pins to another peripheral.
+
+
+
+3. USART3 Parameter Settings
+
+Go to:
+
+USART3 → Parameter Settings
+
+Set the following:
+
+Parameter	Setting
+Baud Rate	115200 Bits/s
+Word Length	8 Bits
+Parity	None
+Stop Bits	1
+Data Direction / Mode	TX and RX
+Hardware Flow Control	None
+Over Sampling	16
+
+The configuration should look approximately like:
+
+USART3
+ └── Parameter Settings
+
+Baud Rate             115200
+Word Length           8 Bits
+Parity                None
+Stop Bits             1
+Mode                  TX_RX
+Hardware Flow Control None
+Oversampling          16
+
+Your generated project already contains these USART3 settings.
+
+
+
+
+4. Configure USART3 NVIC Interrupt
+
+Since your experiment asks for the USART3 NVIC interrupt, configure it as follows.
+
+In the .ioc configuration, select:
+
+USART3 → NVIC Settings
+
+Find:
+
+USART3 global interrupt
+
+Tick:
+
+Enabled
+
+Leave the priority at the default value unless your laboratory requires a specific priority.
+
+The configuration should look like:
+
+NVIC Settings
+
+☑ USART3 global interrupt
+Important
+
+For the current experiment, the transmission code uses:
+
+HAL_UART_Transmit()
+
+which is polling/blocking communication.
+
+Therefore, enabling the USART3 interrupt is not required for HAL_UART_Transmit() itself.
+
+However, because your experiment procedure specifically requires configuring the USART3 NVIC interrupt, enable it in CubeMX. It will become useful if you later use:
+
+HAL_UART_Transmit_IT()
+
+or
+
+HAL_UART_Receive_IT()
+
+
+
+
+5. Check Clock Configuration
+
+Select:
+
+Clock Configuration
+
+Make sure CubeMX does not show any clock configuration errors.
+You do not need to manually modify the clock just for this UART experiment.
+
+
+
+
+6. Configure Project Settings
+
+Go to:
+
+Project Manager → Code Generator
+
+Make sure:
+
+☑ Generate peripheral initialization as a pair of '.c/.h' files
+
+can remain at the default setting.
+
+Then click:
+
+Generate Code
+
+If CubeIDE asks to open the generated project, select Yes.
+
+
+
+
+
+7. Check the Generated main.c
+
+After code generation, open:
+
+Core
+ └── Src
+      └── main.c
+
+Make sure CubeMX has generated:
+
+UART_HandleTypeDef huart3;
+
+and:
+
+MX_USART3_UART_Init();
+
+Your current generated file already has huart3 and MX_USART3_UART_Init().
+
+
+
+
+
+8. Add the UART Code
+
+At the top of main.c, add:
+
+#include "string.h"
+#include "stdio.h"
+
+Then, after:
+
+MX_USART3_UART_Init();
+
+add:
+
+char greeting[] =
+    "\r\n========================================\r\n"
+    "   STM32H753ZI UART EXPERIMENT 8\r\n"
+    "   USART3 Serial Communication\r\n"
+    "========================================\r\n";
+
+HAL_UART_Transmit(&huart3,
+                  (uint8_t *)greeting,
+                  strlen(greeting),
+                  HAL_MAX_DELAY);
+
+Inside:
+
+while (1)
+
+add:
+
+static uint32_t counter = 0;
+
+char message[100];
+
+sprintf(message, "Counter = %lu\r\n", counter);
+
+HAL_UART_Transmit(&huart3,
+                  (uint8_t *)message,
+                  strlen(message),
+                  HAL_MAX_DELAY);
+
+counter++;
+
+HAL_Delay(1000);
+
+
+
+
+
+9. Build the Project
+
+Save the file:
+
+Ctrl + S
+
+Click:
+
+Project → Build Project
+
+or click the hammer icon.
+
+Make sure the Console shows:
+Build Finished
+
+with:
+
+0 errors
+
+
+
+
+10. Connect the NUCLEO-H753ZI to the PC
+Connect the ST-LINK USB connector of the NUCLEO-H753ZI to the PC using a USB cable.
+Wait for Windows to detect the board.
+The ST-LINK provides the connection between the STM32 UART and the PC's Virtual COM Port.
+
+
+
+
+11. Find the COM Port
+
+In Windows:
+
+Open Device Manager.
+
+Expand:
+
+Ports (COM & LPT)
+
+Look for the ST-LINK Virtual COM Port.
+
+For example:
+
+STMicroelectronics STLink Virtual COM Port (COM3)
+
+Your COM number may be different.
+
+
+
+
+
+12. Flash the Program
+
+In STM32CubeIDE:
+
+Click the Run button, or press:
+Ctrl + F11
+Select the STM32 project.
+CubeIDE will program the NUCLEO-H753ZI.
+After programming, the program starts running.
+
+
+
+
+13. Open Serial Monitor in STM32CubeIDE
+
+This is the important part for your experiment.
+
+In STM32CubeIDE, open:
+
+Window → Show View → Other...
+
+Then select:
+
+Terminal → Terminal
+
+and click:
+
+Open
+
+Depending on your STM32CubeIDE version, the serial terminal may also appear as Serial Monitor.
+
+
+
+
+
+14. Configure the Serial Monitor
+
+Select the detected COM port.
+
+For example:
+
+Connection Type : Serial
+Port            : COM3
+Baud Rate       : 115200
+Data Bits       : 8
+Parity          : None
+Stop Bits       : 1
+Flow Control    : None
+
+Use your actual COM number, not necessarily COM3.
+
+The complete configuration is:
+
+COM Port    : ST-LINK Virtual COM Port
+Baud Rate   : 115200
+Data Bits   : 8
+Parity      : None
+Stop Bits   : 1
+Flow Control: None
+
+Then click:
+
+Open
+
+
+
+
+
+15. Reset the STM32 Board
+
+After opening the serial monitor:
+
+Press the RESET button on the NUCLEO-H753ZI.
+The STM32 program starts again.
+The greeting message should appear.
+
+You should see:
+
+========================================
+   STM32H753ZI UART EXPERIMENT 8
+   USART3 Serial Communication
+========================================
+Counter = 0
+Counter = 1
+Counter = 2
+Counter = 3
+Counter = 4
+Counter = 5
+
+The counter should increase approximately once every second.
+
+
+
+
+
+16. Final IOC Configuration Checklist
+
+Before generating the code, verify:
+
+Pinout
+PD8 → USART3_TX
+PD9 → USART3_RX
+USART3
+Mode              → Asynchronous
+Baud Rate         → 115200
+Word Length       → 8 Bits
+Parity            → None
+Stop Bits         → 1
+Hardware Flow     → None
+Oversampling      → 16
+NVIC
+☑ USART3 global interrupt
+Generated code
+huart3
+MX_USART3_UART_Init()
+PC Serial Monitor
+COM Port          → ST-LINK Virtual COM Port
+Baud Rate         → 115200
+Data Bits         → 8
+Parity            → None
+Stop Bits         → 1
+Flow Control      → None
+Expected result
+STM32H753ZI UART EXPERIMENT 8
+USART3 Serial Communication
+Counter = 0
+Counter = 1
+Counter = 2
+Counter = 3

@@ -1,0 +1,37 @@
+1. Open STM32CubeIDE and open the NUCLEO-H753ZI project.
+
+2. Configure USART3:
+
+   * Mode: Asynchronous
+   * PD8 → TX
+   * PD9 → RX
+   * Baud Rate: 115200
+   * Data Bits: 8
+   * Parity: None
+   * Stop Bits: 1
+   * Flow Control: None
+
+3. Configure I2C1 for the 16×2 LCD using the same pins and settings as Experiment 7.
+
+4. Generate the code from the .ioc file.
+
+5. Add the LCD driver files (lcd.c and lcd.h) from Experiment 7.
+
+6. Add the UART echo and LCD display code to main.c.
+
+7. Build and program the NUCLEO-H753ZI.
+
+8. Open the Serial Terminal with:
+
+   * Baud Rate: 115200
+   * Data Bits: 8
+   * Parity: None
+   * Stop Bits: 1
+   * Flow Control: None
+
+9. Type a message in the Serial Terminal and press Enter.
+
+10. Verify the output:
+
+* The typed characters are echoed back to the PC.
+* The entered line is displayed on the second row of the LCD.

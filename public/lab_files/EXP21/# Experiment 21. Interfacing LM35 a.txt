@@ -1,0 +1,354 @@
+# Experiment 21. Interfacing LM35 and LDR with STM32H753ZI and Displaying Temperature and Light Intensity on I2C LCD
+
+## Aim
+
+To interface an **LM35 temperature sensor** and an **LDR light sensor** with the **STM32H753ZI** using ADC1 and display the measured **temperature and light intensity percentage** on a **16×2 I2C LCD**.
+
+## Requirements
+
+* NUCLEO-H753ZI development board
+* STM32H753ZI microcontroller
+* LM35 temperature sensor
+* LDR sensor/module
+* 16×2 I2C LCD
+* Jumper wires
+* USB cable
+* STM32CubeIDE
+* Serial Terminal
+
+## Pin Connections
+
+| Component  | Pin | STM32H753ZI      |
+| ---------- | --- | ---------------- |
+| LM35       | VCC | 3.3V             |
+| LM35       | GND | GND              |
+| LM35       | OUT | PA0 / ADC1_INP16 |
+| LDR Module | VCC | 3.3V             |
+| LDR Module | GND | GND              |
+| LDR Module | AO  | PA4 / ADC1_INP18 |
+| I2C LCD    | VCC | 5V               |
+| I2C LCD    | GND | GND              |
+| I2C LCD    | SDA | I2C1 SDA         |
+| I2C LCD    | SCL | I2C1 SCL         |
+
+The program specifically defines **PA0 as ADC1_INP16 for LM35** and **PA4 as ADC1_INP18 for LDR**.
+
+## Procedure
+
+### Step 1: Create a New STM32 Project
+
+1. Open **STM32CubeIDE**.
+2. Select **File → New → STM32 Project**.
+3. Select the **NUCLEO-H753ZI** board.
+4. Give the project a suitable name such as:
+
+```text
+Experiment_21_LM35_LDR_LCD
+```
+
+5. Finish the project creation.
+
+---
+
+### Step 2: Configure LM35 Input
+
+1. Open the `.ioc` file.
+2. Configure **PA0** as an analog input.
+3. PA0 corresponds to:
+
+```text
+ADC1_INP16
+```
+
+4. Connect the LM35 output to PA0.
+
+The source code configures PA0 as an analog input and uses ADC channel 16 for the LM35.
+
+---
+
+### Step 3: Configure LDR Input
+
+1. Configure **PA4** as an analog input.
+2. PA4 corresponds to:
+
+```text
+ADC1_INP18
+```
+
+3. Connect the analog output of the LDR module to PA4.
+
+The source configures both PA0 and PA4 as analog inputs.
+
+---
+
+### Step 4: Configure ADC1
+
+Configure ADC1 with the following settings:
+
+| Parameter             | Setting        |
+| --------------------- | -------------- |
+| ADC                   | ADC1           |
+| Resolution            | 16-bit         |
+| Conversion Mode       | Single         |
+| Scan Mode             | Disabled       |
+| Number of Conversions | 1              |
+| Trigger               | Software Start |
+| Data Management       | DR             |
+| Sampling Time         | 810.5 cycles   |
+| Single/Differential   | Single-ended   |
+
+The program uses ADC1 in **16-bit resolution**, software-triggered single conversion mode.
+
+The program dynamically changes the ADC channel between:
+
+```text
+ADC_CHANNEL_16 → LM35
+ADC_CHANNEL_18 → LDR
+```
+
+and takes multiple readings for averaging.
+
+---
+
+### Step 5: Configure I2C1
+
+1. Enable **I2C1** in STM32CubeMX.
+2. Configure it for the I2C LCD.
+3. The LCD address used by the program is:
+
+```text
+0x27
+```
+
+The code shifts this address for STM32 HAL communication:
+
+```c
+#define LCD_ADDR (0x27 << 1)
+```
+
+The LCD is operated in **4-bit mode** through the I2C interface.
+
+---
+
+### Step 6: Configure USART3
+
+Configure USART3 for serial monitoring.
+
+| Parameter             | Setting |
+| --------------------- | ------- |
+| Baud Rate             | 115200  |
+| Word Length           | 8 Bits  |
+| Stop Bits             | 1       |
+| Parity                | None    |
+| Mode                  | TX/RX   |
+| Hardware Flow Control | None    |
+
+The source code configures USART3 at **115200 baud, 8-bit, no parity, 1 stop bit**.
+
+---
+
+### Step 7: Generate the Code
+
+1. Save the `.ioc` file.
+2. Click **Generate Code**.
+3. Open `main.c`.
+4. Add the LCD functions and ADC reading function from the provided Experiment 21 source code.
+
+The program initializes:
+
+```c
+HAL_Init();
+SystemClock_Config();
+MX_GPIO_Init();
+MX_USART3_UART_Init();
+MX_USB_OTG_FS_PCD_Init();
+MX_ADC1_Init();
+MX_I2C1_Init();
+```
+
+followed by LCD initialization and ADC calibration.
+
+---
+
+### Step 8: Initialize the LCD
+
+The program initializes the LCD and displays a startup message:
+
+```text
+Experiment 21
+LM35 + LDR
+```
+
+The message remains for approximately **1.5 seconds** before the LCD is cleared.
+
+---
+
+### Step 9: Read LM35 Temperature
+
+The program reads the LM35 using:
+
+```c
+ADC_CHANNEL_16
+```
+
+Ten ADC readings are collected and averaged to reduce fluctuations.
+
+The ADC value is converted into millivolts using:
+
+```c
+raw_temperature_x10 =
+    (lm35_raw * 3300UL) / 65535UL;
+```
+
+A calibration factor is then applied:
+
+```c
+temperature_x10 =
+    (raw_temperature_x10 * 530UL) / 1000UL;
+```
+
+The final value is displayed in °C.
+
+---
+
+### Step 10: Read LDR Light Intensity
+
+The LDR is read using:
+
+```c
+ADC_CHANNEL_18
+```
+
+Ten readings are averaged before calculating the light intensity.
+
+The LDR output is inverted using:
+
+```c
+raw_light_percentage =
+    100UL -
+    ((ldr_raw * 100UL) / 65535UL);
+```
+
+A calibration factor is then applied:
+
+```c
+light_percentage =
+    (raw_light_percentage * 649UL) / 1000UL;
+```
+
+The value is limited to a maximum of 100%.
+
+---
+
+### Step 11: Display the Results on LCD
+
+The first row of the LCD displays:
+
+```text
+Temp:XX.X C
+```
+
+The second row displays:
+
+```text
+Light:XX%
+```
+
+The LCD is updated every **500 ms**.
+
+---
+
+### Step 12: Build and Flash
+
+1. Click **Build Project**.
+2. Connect the NUCLEO-H753ZI to the computer using USB.
+3. Select the ST-LINK debugger.
+4. Click **Run** or **Debug**.
+5. Wait for the program to be downloaded to the board.
+
+---
+
+### Step 13: Observe the Output
+
+After programming, the LCD initially displays:
+
+```text
+Experiment 21
+LM35 + LDR
+```
+
+After 1.5 seconds, the display changes to the sensor readings.
+
+Example:
+
+```text
+Temp:22.0 C
+Light:50%
+```
+
+The actual values will vary depending on the temperature and amount of light falling on the LDR.
+
+## Working Principle
+
+The LM35 produces an analog voltage proportional to temperature. This voltage is converted into a digital value using the STM32H753ZI's ADC.
+
+The LDR produces an analog voltage depending on the amount of incident light. The ADC converts this voltage into a digital value, which is processed to obtain a light-intensity percentage.
+
+The STM32H753ZI then sends the processed values to the I2C LCD.
+
+### Block Diagram
+
+```text
+             ┌───────────────┐
+             │     LM35      │
+             │ Temperature   │
+             └───────┬───────┘
+                     │
+                  PA0 / ADC1
+                     │
+                     ▼
+             ┌───────────────┐
+             │               │
+             │   STM32H753ZI │
+             │               │
+             │     ADC1      │
+             │               │
+             └───────┬───────┘
+                     │
+             ┌───────┴───────┐
+             │               │
+          I2C1             ADC1
+             │               │
+             ▼               ▲
+      ┌─────────────┐        │
+      │  I2C LCD    │        │
+      │  16 × 2     │        │
+      └─────────────┘        │
+                             │
+                     ┌───────┴───────┐
+                     │     LDR       │
+                     │ Light Sensor  │
+                     └───────────────┘
+```
+
+## Expected Output
+
+### LCD Startup
+
+```text
+Experiment 21
+LM35 + LDR
+```
+
+### LCD Sensor Output
+
+```text
+Temp:22.0 C
+Light:50%
+```
+
+The values continuously change according to the temperature and surrounding light conditions.
+
+## Result
+
+The **LM35 temperature sensor and LDR light sensor were successfully interfaced with the STM32H753ZI using ADC1. The measured temperature and light intensity were processed and successfully displayed on a 16×2 I2C LCD.**

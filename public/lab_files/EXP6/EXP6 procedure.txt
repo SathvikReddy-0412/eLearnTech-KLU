@@ -1,0 +1,67 @@
+1. Create STM32CubeIDE Project
+
+
+Open STM32CubeIDE.
+Create a new STM32 Project.
+Select NUCLEO-H753ZI.
+Open the .ioc configuration.
+
+
+
+
+2. IOC Configuration
+
+
+Step 1: Configure PB0
+Go to:
+Pinout & Configuration → System Core → GPIO
+Set:
+PB0 → GPIO_Output
+Configure PB0 as:
+GPIO output level     → High
+GPIO mode             → Output Push Pull
+GPIO Pull-up/Pull-down → No pull-up and no pull-down
+Maximum output speed  → Low
+User Label            → RELAY_IN
+Step 2: Generate Code
+Go to:
+Project → Generate Code
+Click Generate Code.
+
+
+
+3. Pin Connections
+
+
+
+Connect the 5V relay module:
+Relay Module	NUCLEO-H753ZI
+IN	PB0
+VCC	5V
+GND	GND
+For initial testing, do not connect a 230V AC load.
+
+
+
+4. Code
+
+
+
+Open:
+Core → Src → main.c
+Inside the while (1) loop, use:
+while (1)
+{
+    /* Relay ON */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+    HAL_Delay(2000);
+
+    /* Relay OFF */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_Delay(2000);
+}
+Expected Result
+Relay ON  → 2 seconds
+Relay OFF → 2 seconds
+Relay ON  → 2 seconds
+Relay OFF → 2 seconds

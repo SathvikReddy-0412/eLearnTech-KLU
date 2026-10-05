@@ -4,6 +4,13 @@ export const labExperiments = [
   {
     id: "lab-1",
     number: 1,
+    files: [
+      {
+            "name": "20261004_143511_0000.mp4",
+            "path": "/lab_files/EXP1/20261004_143511_0000.mp4",
+            "type": "video"
+      }
+],
     title: "Installation and Configuration of STM32CubeIDE and Creation of the First STM32 Project",
     subtitle: "Setting up the ARM GCC Toolchain, ST-LINK Drivers, and Initializing target NUCLEO-H753ZI MCU",
     difficulty: "Beginner",
@@ -43,7 +50,8 @@ Key Workspace Concepts:
     codeSnippet: `/* USER CODE BEGIN Header */
 /**
   * @file           : main.c
-  * @brief          : Experiment 1 - STM32 project initialization test
+  * @brief          : Experiment 1 - Installation & Project Setup Test
+  * @target         : NUCLEO-H753ZI (STM32H753ZI ARM Cortex-M7)
   */
 /* USER CODE END Header */
 #include "main.h"
@@ -53,22 +61,36 @@ static void MX_GPIO_Init(void);
 
 int main(void)
 {
-  /* MCU Configuration: Reset peripherals, Init Flash interface & SysTick */
+  /* Reset peripherals, initialize Flash interface and SysTick */
   HAL_Init();
 
-  /* Configure System Clock to 480 MHz */
+  /* Configure system clock to 480 MHz */
   SystemClock_Config();
 
-  /* Initialize all configured peripherals */
+  /* Initialize all configured GPIO pins */
   MX_GPIO_Init();
 
   /* Infinite main loop */
   while (1)
   {
-    /* Heartbeat test: Toggle LD1 Green LED */
+    /* Heartbeat Test: Toggle On-board Green LED (PB0 / LD1) */
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-    HAL_Delay(500);
+    HAL_Delay(500); // 500 ms delay
   }
+}
+
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /* Configure PB0 as Push-Pull Output */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }`,
     quiz: [
       {
@@ -93,6 +115,18 @@ int main(void)
   {
     id: "lab-2",
     number: 2,
+    files: [
+      {
+            "name": "Implementing and Analyzing GPIO Programming IOT.docx",
+            "path": "/lab_files/EXP2/Implementing and Analyzing GPIO Programming IOT.docx",
+            "type": "document"
+      },
+      {
+            "name": "WhatsApp Video 2026-10-02 at 23.53.24.mp4",
+            "path": "/lab_files/EXP2/WhatsApp Video 2026-10-02 at 23.53.24.mp4",
+            "type": "video"
+      }
+],
     title: "Implementing and Analyzing GPIO Programming: Blinking the Onboard LED Using STM32 HAL",
     subtitle: "Understanding AHB4 Bus Clock Enabling, Push-Pull Drivers, and SysTick Delays",
     difficulty: "Beginner",
@@ -127,7 +161,17 @@ HAL API Functions:
       "In GPIO Parameter Settings: Output Level = LOW, Mode = Push-Pull, Pull = No pull, Speed = Low.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 2 - Implementing and Analyzing GPIO Programming
+  * @description    : Blinking Onboard User LEDs using HAL GPIO APIs
+  */
+/* USER CODE END Header */
+#include "main.h"
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
 int main(void)
 {
@@ -137,17 +181,30 @@ int main(void)
 
   while (1)
   {
-    // Sequential Chasing Pattern
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);   // Green ON
-    HAL_Delay(250);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);   // Blue ON
-    HAL_Delay(250);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);  // Red ON
+    /* Turn ON Green LED (PB0), Turn OFF Red LED (PB14) */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
     HAL_Delay(250);
 
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_7 | GPIO_PIN_14, GPIO_PIN_RESET);
-    HAL_Delay(500);
+    /* Turn OFF Green LED (PB0), Turn ON Red LED (PB14) */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+    HAL_Delay(250);
   }
+}
+
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0 | GPIO_PIN_14, GPIO_PIN_RESET);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_14;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }`,
     quiz: [
       {
@@ -161,6 +218,18 @@ int main(void)
   {
     id: "lab-3",
     number: 3,
+    files: [
+      {
+            "name": "SysTick Timer-Based Periodic LED Task Scheduler IOT EXP 3.docx",
+            "path": "/lab_files/EXP3/SysTick Timer-Based Periodic LED Task Scheduler IOT EXP 3.docx",
+            "type": "document"
+      },
+      {
+            "name": "WhatsApp Video 2026-10-02 at 23.56.48.mp4",
+            "path": "/lab_files/EXP3/WhatsApp Video 2026-10-02 at 23.56.48.mp4",
+            "type": "video"
+      }
+],
     title: "Development of a SysTick Timer-Based Periodic LED Task Scheduler Without Using Software Delays",
     subtitle: "Non-blocking Periodic Task Execution Using HAL_GetTick() Timestamp Polling",
     difficulty: "Intermediate",
@@ -191,11 +260,20 @@ When $\\text{Elapsed Time} \\ge \\text{Task Period}$, the task executes and upda
       "Verify SysTick interrupt source is set to Timebase Source (1 ms).",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 3 - SysTick Non-Blocking Task Scheduler
+  * @description    : Periodic LED blinking using HAL_GetTick() without HAL_Delay()
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-uint32_t t_green = 0;
-uint32_t t_blue = 0;
-uint32_t t_red = 0;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+
+uint32_t last_led_time = 0;
+const uint32_t LED_INTERVAL = 200; // 200 ms non-blocking interval
 
 int main(void)
 {
@@ -205,26 +283,29 @@ int main(void)
 
   while (1)
   {
-    uint32_t now = HAL_GetTick();
+    uint32_t current_time = HAL_GetTick();
 
-    /* Task 1: Green LED Toggles Every 100 ms */
-    if (now - t_green >= 100) {
-      t_green = now;
-      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    /* Non-blocking periodic task execution */
+    if (current_time - last_led_time >= LED_INTERVAL)
+    {
+      last_led_time = current_time;
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // Toggle LD1 LED
     }
 
-    /* Task 2: Blue LED Toggles Every 500 ms */
-    if (now - t_blue >= 500) {
-      t_blue = now;
-      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-    }
-
-    /* Task 3: Red LED Toggles Every 1000 ms */
-    if (now - t_red >= 1000) {
-      t_red = now;
-      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
-    }
+    /* Other background CPU tasks can run here unhindered */
   }
+}
+
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }`,
     quiz: [
       {
@@ -243,6 +324,18 @@ int main(void)
   {
     id: "lab-4",
     number: 4,
+    files: [
+      {
+            "name": "SysTick Timer-Based Periodic LED Task Scheduler IOT EXP 3 - Copy.docx",
+            "path": "/lab_files/EXP4/SysTick Timer-Based Periodic LED Task Scheduler IOT EXP 3 - Copy.docx",
+            "type": "document"
+      },
+      {
+            "name": "WhatsApp Video 2026-10-04 at 13.01.44.mp4",
+            "path": "/lab_files/EXP4/WhatsApp Video 2026-10-04 at 13.01.44.mp4",
+            "type": "video"
+      }
+],
     title: "Constructing a Debounced GPIO Input Interface: Push Button Controlled LED Operation",
     subtitle: "Mechanical Switch Contact Bounce Filtering and EXTI Interrupt Handling",
     difficulty: "Beginner",
@@ -274,22 +367,75 @@ Software debouncing discards subsequent trigger edges occurring within a 50 ms d
       "In System Core -> NVIC: Enable 'EXTI line[15:10] interrupts'.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 4 - Debounced Push Button Input Interface
+  * @description    : Reading B1 User Push Button (PC13) with Software Debounce
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-#define DEBOUNCE_TIME_MS 50
-volatile uint32_t last_btn_tick = 0;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+uint8_t button_state = 0;
+uint8_t last_button_state = 0;
+uint32_t last_debounce_time = 0;
+const uint32_t DEBOUNCE_DELAY = 50; // 50 ms debounce delay
+
+int main(void)
 {
-  if (GPIO_Pin == GPIO_PIN_13)
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+
+  while (1)
   {
-    uint32_t current_tick = HAL_GetTick();
-    if ((current_tick - last_btn_tick) > DEBOUNCE_TIME_MS)
+    uint8_t reading = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+
+    if (reading != last_button_state)
     {
-      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7); // Toggle Blue LED
-      last_btn_tick = current_tick;
+      last_debounce_time = HAL_GetTick();
     }
+
+    if ((HAL_GetTick() - last_debounce_time) > DEBOUNCE_DELAY)
+    {
+      if (reading != button_state)
+      {
+        button_state = reading;
+
+        /* Active High button press detected on NUCLEO-H753ZI B1 */
+        if (button_state == GPIO_PIN_SET)
+        {
+          HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // Toggle LED
+        }
+      }
+    }
+
+    last_button_state = reading;
   }
+}
+
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  /* LED PB0 Output */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* Button PC13 Input */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }`,
     quiz: [
       {
@@ -303,6 +449,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   {
     id: "lab-5",
     number: 5,
+    files: [
+      {
+            "name": "Experiment_5_GPIO_Drive_Strength_NUCLEO_H753ZI_REFERENCE_STYLE.docx",
+            "path": "/lab_files/EXP5/Experiment_5_GPIO_Drive_Strength_NUCLEO_H753ZI_REFERENCE_STYLE.docx",
+            "type": "document"
+      }
+],
     title: "Evaluating GPIO Drive Strengths: Performance Analysis of GPIO Speed and Pull-Up/Pull-Down Configurations",
     subtitle: "Analyzing Output Slew Rates, Noise Margins, and Drive Speeds (Low, Medium, High, Very High)",
     difficulty: "Intermediate",
@@ -334,7 +487,17 @@ Internal Pull-Up / Pull-Down Resistors (~40 kΩ):
       "Configure PE11 as Output Push-Pull, Speed = LOW.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 5 - GPIO Drive Strength & Output Speed Analysis
+  * @description    : Toggling PA6 at High Speed to measure rise/fall times on Oscilloscope
+  */
+/* USER CODE END Header */
+#include "main.h"
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
 int main(void)
 {
@@ -344,10 +507,23 @@ int main(void)
 
   while (1)
   {
-    /* Rapidly toggle pins to measure edge rise times on oscilloscope */
-    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9 | GPIO_PIN_11, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9 | GPIO_PIN_11, GPIO_PIN_RESET);
+    /* Rapid Toggle PA6 for Signal Integrity & Slew Rate Analysis */
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
   }
+}
+
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /* Configure PA6 as VERY HIGH Speed Output */
+  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH; // 85 MHz - 130 MHz Slew Rate
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }`,
     quiz: [
       {
@@ -366,6 +542,49 @@ int main(void)
   {
     id: "lab-6",
     number: 6,
+    youtubeUrl: "https://www.youtube.com/watch?v=ZNrrf7SJ_9Y",
+    youtubeEmbedUrl: "https://www.youtube-nocookie.com/embed/ZNrrf7SJ_9Y",
+    youtubeThumbnail: "/lab_files/EXP6/youtube_thumbnail.jpg",
+    files: [
+      {
+            "name": "EXP6 procedure.txt",
+            "path": "/lab_files/EXP6/EXP6 procedure.txt",
+            "type": "document"
+      },
+      {
+            "name": "exp6.txt",
+            "path": "/lab_files/EXP6/exp6.txt",
+            "type": "document"
+      },
+      {
+            "name": "IMG20260927143558.jpg",
+            "path": "/lab_files/EXP6/IMG20260927143558.jpg",
+            "type": "image"
+      },
+      {
+            "name": "Screenshot (16).png",
+            "path": "/lab_files/EXP6/Screenshot (16).png",
+            "type": "image"
+      },
+      {
+            "name": "VID20260927143625.mp4",
+            "path": "/lab_files/EXP6/VID20260927143625.mp4",
+            "type": "video"
+      },
+      {
+            "name": "youtube_thumbnail.jpg",
+            "path": "/lab_files/EXP6/youtube_thumbnail.jpg",
+            "type": "image"
+      },
+      {
+            "name": "YouTube Video Demonstration (ID: ZNrrf7SJ_9Y)",
+            "path": "https://www.youtube.com/watch?v=ZNrrf7SJ_9Y",
+            "embedUrl": "https://www.youtube-nocookie.com/embed/ZNrrf7SJ_9Y",
+            "thumbnail": "/lab_files/EXP6/youtube_thumbnail.jpg",
+            "type": "youtube",
+            "youtubeId": "ZNrrf7SJ_9Y"
+      }
+],
     title: "Implementing Logic-Level Control for High-Power Relay Interfacing and Digital Output Control Using STM32",
     subtitle: "Optocoupler Isolation, Transistor Drivers, and High Voltage Load Switching",
     difficulty: "Intermediate",
@@ -399,10 +618,17 @@ Direct pin connection will destroy the MCU!
       "Label pin 'RELAY_CONTROL'. Set Initial State = LOW.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 6 - Relay Interfacing with NUCLEO-H753ZI
+  * @description    : Driving an external Relay Module via PB0 (RELAY_IN)
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-#define RELAY_PIN GPIO_PIN_3
-#define RELAY_PORT GPIOG
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
 int main(void)
 {
@@ -410,16 +636,31 @@ int main(void)
   SystemClock_Config();
   MX_GPIO_Init();
 
+  /* Relay initially OFF (Active Low Relay: SET = OFF, RESET = ON) */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
   while (1)
   {
-    /* Turn Relay ON for 3 seconds */
-    HAL_GPIO_WritePin(RELAY_PORT, RELAY_PIN, GPIO_PIN_SET);
-    HAL_Delay(3000);
+    /* Relay ON (Energize Coil) */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+    HAL_Delay(2000); // Wait 2 seconds
 
-    /* Turn Relay OFF for 3 seconds */
-    HAL_GPIO_WritePin(RELAY_PORT, RELAY_PIN, GPIO_PIN_RESET);
-    HAL_Delay(3000);
+    /* Relay OFF (De-energize Coil) */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_Delay(2000); // Wait 2 seconds
   }
+}
+
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  GPIO_InitStruct.Pin = GPIO_PIN_0; // RELAY_IN
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }`,
     quiz: [
       {
@@ -438,6 +679,49 @@ int main(void)
   {
     id: "lab-7",
     number: 7,
+    youtubeUrl: "https://www.youtube.com/watch?v=tl_Q18riI1o",
+    youtubeEmbedUrl: "https://www.youtube-nocookie.com/embed/tl_Q18riI1o",
+    youtubeThumbnail: "/lab_files/EXP7/youtube_thumbnail.jpg",
+    files: [
+      {
+            "name": "EXP7 Procedure.txt",
+            "path": "/lab_files/EXP7/EXP7 Procedure.txt",
+            "type": "document"
+      },
+      {
+            "name": "Exp7.txt",
+            "path": "/lab_files/EXP7/Exp7.txt",
+            "type": "document"
+      },
+      {
+            "name": "IMG20260927152334.jpg",
+            "path": "/lab_files/EXP7/IMG20260927152334.jpg",
+            "type": "image"
+      },
+      {
+            "name": "Screenshot (17).png",
+            "path": "/lab_files/EXP7/Screenshot (17).png",
+            "type": "image"
+      },
+      {
+            "name": "VID20260927152500.mp4",
+            "path": "/lab_files/EXP7/VID20260927152500.mp4",
+            "type": "video"
+      },
+      {
+            "name": "youtube_thumbnail.jpg",
+            "path": "/lab_files/EXP7/youtube_thumbnail.jpg",
+            "type": "image"
+      },
+      {
+            "name": "YouTube Video Demonstration (ID: tl_Q18riI1o)",
+            "path": "https://www.youtube.com/watch?v=tl_Q18riI1o",
+            "embedUrl": "https://www.youtube-nocookie.com/embed/tl_Q18riI1o",
+            "thumbnail": "/lab_files/EXP7/youtube_thumbnail.jpg",
+            "type": "youtube",
+            "youtubeId": "tl_Q18riI1o"
+      }
+],
     title: "Interfacing an I²C 16×2 LCD and Displaying User Information with Relay Status",
     subtitle: "PCF8574 I2C Backpack Driver, HD44780 4-bit Commands, and Real-time Status Display",
     difficulty: "Intermediate",
@@ -473,55 +757,110 @@ Data is sent as 4-bit nibbles packed into I2C bytes.`,
       "Confirm PB8 = I2C1_SCL, PB9 = I2C1_SDA.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 7 - I2C 16x2 LCD Interfacing with Relay Status
+  * @description    : Driving PCF8574 I2C LCD over I2C1 (PB8/PB9) with Relay State Display
+  */
+/* USER CODE END Header */
+#include "main.h"
 #include <stdio.h>
 
+#define LCD_ADDR (0x27 << 1) // PCF8574 I2C Address shifted left 1 bit
+
 extern I2C_HandleTypeDef hi2c1;
-#define LCD_ADDR 0x4E // 0x27 << 1
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
 
-void LCD_SendCmd(uint8_t cmd) {
-  uint8_t d_m = (cmd & 0xF0) | 0x0C; // EN=1, RS=0
-  uint8_t d_l = (cmd & 0xF0) | 0x08; // EN=0, RS=0
-  uint8_t data[4] = {d_m, d_l, ((cmd<<4)&0xF0)|0x0C, ((cmd<<4)&0xF0)|0x08};
-  HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, data, 4, 100);
+void LCD_SendCommand(uint8_t cmd);
+void LCD_SendData(uint8_t data);
+void LCD_Init(void);
+void LCD_SendString(char *str);
+void LCD_SetCursor(uint8_t row, uint8_t col);
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_I2C1_Init();
+
+  LCD_Init();
+  LCD_SetCursor(0, 0);
+  LCD_SendString("eLearnTech @kl");
+  LCD_SetCursor(1, 0);
+  LCD_SendString("Relay: INITIALIZING");
+  HAL_Delay(1500);
+
+  while (1)
+  {
+    /* Relay ON */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+    LCD_SetCursor(1, 0);
+    LCD_SendString("Relay: ACTIVE [ON] ");
+    HAL_Delay(2000);
+
+    /* Relay OFF */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    LCD_SetCursor(1, 0);
+    LCD_SendString("Relay: IDLE  [OFF]");
+    HAL_Delay(2000);
+  }
 }
 
-void LCD_SendData(uint8_t data_char) {
-  uint8_t d_m = (data_char & 0xF0) | 0x0D; // EN=1, RS=1
-  uint8_t d_l = (data_char & 0xF0) | 0x09; // EN=0, RS=1
-  uint8_t data[4] = {d_m, d_l, ((data_char<<4)&0xF0)|0x0D, ((data_char<<4)&0xF0)|0x09};
-  HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, data, 4, 100);
+void LCD_SendCommand(uint8_t cmd)
+{
+  uint8_t data_u, data_l;
+  uint8_t data_t[4];
+  data_u = (cmd & 0xf0);
+  data_l = ((cmd << 4) & 0xf0);
+  data_t[0] = data_u | 0x0C;  // en=1, rs=0
+  data_t[1] = data_u | 0x08;  // en=0, rs=0
+  data_t[2] = data_l | 0x0C;  // en=1, rs=0
+  data_t[3] = data_l | 0x08;  // en=0, rs=0
+  HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, (uint8_t *)data_t, 4, 100);
 }
 
-void LCD_Init(void) {
+void LCD_SendData(uint8_t data)
+{
+  uint8_t data_u, data_l;
+  uint8_t data_t[4];
+  data_u = (data & 0xf0);
+  data_l = ((data << 4) & 0xf0);
+  data_t[0] = data_u | 0x0D;  // en=1, rs=1
+  data_t[1] = data_u | 0x09;  // en=0, rs=1
+  data_t[2] = data_l | 0x0D;  // en=1, rs=1
+  data_t[3] = data_l | 0x09;  // en=0, rs=1
+  HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, (uint8_t *)data_t, 4, 100);
+}
+
+void LCD_Init(void)
+{
   HAL_Delay(50);
-  LCD_SendCmd(0x30); HAL_Delay(5);
-  LCD_SendCmd(0x30); HAL_Delay(1);
-  LCD_SendCmd(0x32);
-  LCD_SendCmd(0x28); // 4-bit mode, 2 lines
-  LCD_SendCmd(0x0C); // Display ON, Cursor OFF
-  LCD_SendCmd(0x01); // Clear Display
+  LCD_SendCommand(0x30);
+  HAL_Delay(5);
+  LCD_SendCommand(0x30);
+  HAL_Delay(1);
+  LCD_SendCommand(0x32);
+  HAL_Delay(10);
+  LCD_SendCommand(0x28); // 4-bit mode, 2 lines, 5x8 font
+  LCD_SendCommand(0x0C); // Display ON, cursor OFF
+  LCD_SendCommand(0x06); // Entry mode set
+  LCD_SendCommand(0x01); // Clear display
   HAL_Delay(2);
 }
 
-void LCD_Print(char* str) {
-  while(*str) LCD_SendData(*str++);
+void LCD_SendString(char *str)
+{
+  while (*str) LCD_SendData(*str++);
 }
 
-int main(void) {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_I2C1_Init();
-  LCD_Init();
-
-  while(1) {
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET);
-    LCD_SendCmd(0x80); LCD_Print("eLearnTech @ KLU");
-    LCD_SendCmd(0xC0); LCD_Print("RELAY: [ACTIVE] ");
-    HAL_Delay(2000);
-
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_RESET);
-    LCD_SendCmd(0xC0); LCD_Print("RELAY: [OFF]    ");
-    HAL_Delay(2000);
-  }
+void LCD_SetCursor(uint8_t row, uint8_t col)
+{
+  uint8_t pos = (row == 0) ? (0x80 + col) : (0xC0 + col);
+  LCD_SendCommand(pos);
 }`,
     quiz: [
       {
@@ -535,6 +874,39 @@ int main(void) {
   {
     id: "lab-8",
     number: 8,
+    youtubeUrl: "https://www.youtube.com/watch?v=1GtxrjrPLpc",
+    youtubeEmbedUrl: "https://www.youtube-nocookie.com/embed/1GtxrjrPLpc",
+    youtubeThumbnail: "/lab_files/EXP8/youtube_thumbnail.jpg",
+    files: [
+      {
+            "name": "EXP8  Procedure.txt",
+            "path": "/lab_files/EXP8/EXP8  Procedure.txt",
+            "type": "document"
+      },
+      {
+            "name": "Screenshot (18).png",
+            "path": "/lab_files/EXP8/Screenshot (18).png",
+            "type": "image"
+      },
+      {
+            "name": "VID20260927163249.mp4",
+            "path": "/lab_files/EXP8/VID20260927163249.mp4",
+            "type": "video"
+      },
+      {
+            "name": "youtube_thumbnail.jpg",
+            "path": "/lab_files/EXP8/youtube_thumbnail.jpg",
+            "type": "image"
+      },
+      {
+            "name": "YouTube Video Demonstration (ID: 1GtxrjrPLpc)",
+            "path": "https://www.youtube.com/watch?v=1GtxrjrPLpc",
+            "embedUrl": "https://www.youtube-nocookie.com/embed/1GtxrjrPLpc",
+            "thumbnail": "/lab_files/EXP8/youtube_thumbnail.jpg",
+            "type": "youtube",
+            "youtubeId": "1GtxrjrPLpc"
+      }
+],
     title: "Developing and Analyzing UART Serial Communication: Data Transmission from STM32 to PC",
     subtitle: "Asynchronous Serial Transmit via ST-LINK Virtual COM Port (VCP) & printf Retargeting",
     difficulty: "Beginner",
@@ -564,28 +936,35 @@ On NUCLEO-H753ZI, USART3 pins PD8 (TX) and PD9 (RX) route to the ST-LINK debugge
       "Confirm PD8 = USART3_TX, PD9 = USART3_RX.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 8 - UART Serial Communication Transmit
+  * @description    : Transmitting telemetry string over USART3 (PD8/PD9) @ 115200 Baud
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include <string.h>
 
 extern UART_HandleTypeDef huart3;
-
-int _write(int file, char *ptr, int len) {
-  HAL_UART_Transmit(&huart3, (uint8_t *)ptr, len, HAL_MAX_DELAY);
-  return len;
-}
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART3_UART_Init(void);
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_USART3_UART_Init();
-  uint32_t counter = 0;
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_USART3_UART_Init();
 
-  printf("\\r\\n======================================\\r\\n");
-  printf("  eLearnTech@KLU STM32 UART Telemetry\\r\\n");
-  printf("======================================\\r\\n");
+  char msg[] = "eLearnTech @kl — STM32H753ZI UART Test OK!\r\n";
 
   while (1)
   {
-    printf("Telemetry Packet #%lu | System Uptime: %lu ms\\r\\n", ++counter, HAL_GetTick());
+    /* Transmit telemetry string over ST-LINK Virtual COM Port */
+    HAL_UART_Transmit(&huart3, (uint8_t*)msg, strlen(msg), 500);
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // Toggle LED
     HAL_Delay(1000);
   }
 }`,
@@ -601,6 +980,34 @@ int main(void)
   {
     id: "lab-9",
     number: 9,
+    youtubeUrl: "https://www.youtube.com/watch?v=mFNlG3sXp00",
+    youtubeEmbedUrl: "https://www.youtube-nocookie.com/embed/mFNlG3sXp00",
+    youtubeThumbnail: "/lab_files/EXP9/youtube_thumbnail.jpg",
+    files: [
+      {
+            "name": "EXP 9 Procedure.txt",
+            "path": "/lab_files/EXP9/EXP 9 Procedure.txt",
+            "type": "document"
+      },
+      {
+            "name": "VID_20260927_173938.mp4",
+            "path": "/lab_files/EXP9/VID_20260927_173938.mp4",
+            "type": "video"
+      },
+      {
+            "name": "youtube_thumbnail.jpg",
+            "path": "/lab_files/EXP9/youtube_thumbnail.jpg",
+            "type": "image"
+      },
+      {
+            "name": "YouTube Video Demonstration (ID: mFNlG3sXp00)",
+            "path": "https://www.youtube.com/watch?v=mFNlG3sXp00",
+            "embedUrl": "https://www.youtube-nocookie.com/embed/mFNlG3sXp00",
+            "thumbnail": "/lab_files/EXP9/youtube_thumbnail.jpg",
+            "type": "youtube",
+            "youtubeId": "mFNlG3sXp00"
+      }
+],
     title: "Developing and Analyzing UART Serial Communication: Data Reception from PC to STM32",
     subtitle: "Polled & Non-Blocking Data Reception with Command Character Parsing",
     difficulty: "Intermediate",
@@ -628,34 +1035,42 @@ int main(void)
       "In NVIC Settings, check 'USART3 global interrupt'.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 9 - UART Transmit and Receive Echo
+  * @description    : Echoing received PC characters over USART3 (PD8/PD9)
+  */
+/* USER CODE END Header */
+#include "main.h"
 
 extern UART_HandleTypeDef huart3;
-uint8_t rx_data;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART3_UART_Init(void);
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if (huart->Instance == USART3)
-  {
-    /* Process received ASCII command character */
-    if (rx_data == '1') {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);   // Green ON
-    } else if (rx_data == '0') {
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET); // Green OFF
-    }
-
-    /* Re-arm UART RX Interrupt for next byte */
-    HAL_UART_Receive_IT(&huart3, &rx_data, 1);
-  }
-}
+uint8_t rx_buffer[1];
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_USART3_UART_Init();
-  HAL_UART_Receive_IT(&huart3, &rx_data, 1);
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_USART3_UART_Init();
 
-  while (1) {}
+  char welcome[] = "UART Echo Terminal Ready. Type any key:\r\n";
+  HAL_UART_Transmit(&huart3, (uint8_t*)welcome, sizeof(welcome)-1, 500);
+
+  while (1)
+  {
+    /* Receive 1 byte from PC serial monitor */
+    if (HAL_UART_Receive(&huart3, rx_buffer, 1, HAL_MAX_DELAY) == HAL_OK)
+    {
+      /* Echo byte back to PC */
+      HAL_UART_Transmit(&huart3, rx_buffer, 1, 100);
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    }
+  }
 }`,
     quiz: [
       {
@@ -674,6 +1089,13 @@ int main(void)
   {
     id: "lab-10",
     number: 10,
+    files: [
+      {
+            "name": "EXP10 Procedure.txt",
+            "path": "/lab_files/EXP10/EXP10 Procedure.txt",
+            "type": "document"
+      }
+],
     title: "Development of a UART Echo Application Using STM32 Displaying on LCD",
     subtitle: "Real-time Serial Terminal Mirroring and Character Rendering on I2C LCD",
     difficulty: "Intermediate",
@@ -703,21 +1125,66 @@ int main(void)
       "Enable I2C1 in Standard Mode (100 kHz).",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 10 - USART3 UART to I2C 16x2 LCD Interface
+  * @description    : Displaying received UART Serial text on 16x2 LCD Row 2
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include <string.h>
 
 extern UART_HandleTypeDef huart3;
 extern I2C_HandleTypeDef hi2c1;
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART3_UART_Init(void);
+static void MX_I2C1_Init(void);
+
+void LCD_Init(void);
+void LCD_SetCursor(uint8_t row, uint8_t col);
+void LCD_SendString(char *str);
+
 uint8_t rx_byte;
-char lcd_buf[17];
-uint8_t buf_pos = 0;
+char rx_line[17];
+uint8_t rx_index = 0;
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_I2C1_Init(); MX_USART3_UART_Init();
-  HAL_UART_Receive_IT(&huart3, &rx_byte, 1);
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_USART3_UART_Init();
+  MX_I2C1_Init();
 
-  while (1) {}
+  LCD_Init();
+  LCD_SetCursor(0, 0);
+  LCD_SendString("UART -> LCD Echo");
+
+  while (1)
+  {
+    if (HAL_UART_Receive(&huart3, &rx_byte, 1, HAL_MAX_DELAY) == HAL_OK)
+    {
+      /* Echo byte to PC */
+      HAL_UART_Transmit(&huart3, &rx_byte, 1, 100);
+
+      if (rx_byte == '\r' || rx_byte == '\n' || rx_index >= 16)
+      {
+        rx_line[rx_index] = '\0';
+        LCD_SetCursor(1, 0);
+        LCD_SendString("                "); // Clear line
+        LCD_SetCursor(1, 0);
+        LCD_SendString(rx_line);
+        rx_index = 0;
+      }
+      else
+      {
+        rx_line[rx_index++] = rx_byte;
+      }
+    }
+  }
 }`,
     quiz: [
       {
@@ -736,6 +1203,43 @@ int main(void)
   {
     id: "lab-11",
     number: 11,
+    files: [
+      {
+            "name": "exp11.mp4",
+            "path": "/lab_files/EXP11/exp11.mp4",
+            "type": "video"
+      },
+      {
+            "name": "WhatsApp Image 2026-09-30 at 10.40.02.jpeg",
+            "path": "/lab_files/EXP11/WhatsApp Image 2026-09-30 at 10.40.02.jpeg",
+            "type": "image"
+      },
+      {
+            "name": "WhatsApp Image 2026-09-30 at 10.42.26.jpeg",
+            "path": "/lab_files/EXP11/WhatsApp Image 2026-09-30 at 10.42.26.jpeg",
+            "type": "image"
+      },
+      {
+            "name": "WhatsApp Image 2026-09-30 at 10.49.34.jpeg",
+            "path": "/lab_files/EXP11/WhatsApp Image 2026-09-30 at 10.49.34.jpeg",
+            "type": "image"
+      },
+      {
+            "name": "WhatsApp Image 2026-09-30 at 10.49.56.jpeg",
+            "path": "/lab_files/EXP11/WhatsApp Image 2026-09-30 at 10.49.56.jpeg",
+            "type": "image"
+      },
+      {
+            "name": "WhatsApp Image 2026-09-30 at 10.50.21.jpeg",
+            "path": "/lab_files/EXP11/WhatsApp Image 2026-09-30 at 10.50.21.jpeg",
+            "type": "image"
+      },
+      {
+            "name": "WhatsApp Image 2026-09-30 at 10.50.46.jpeg",
+            "path": "/lab_files/EXP11/WhatsApp Image 2026-09-30 at 10.50.46.jpeg",
+            "type": "image"
+      }
+],
     title: "Designing Asynchronous Data Interrupt-Driven UART Communication Using HAL Library",
     subtitle: "Non-blocking RX/TX Circular Ring Buffers for High-Throughput Packet Processing",
     difficulty: "Advanced",
@@ -766,22 +1270,39 @@ $$\\text{Buffer Full} \\iff (\\text{Head} + 1) \\bmod N == \\text{Tail}$$`,
       "In NVIC, enable USART3 global interrupt with Priority = 5.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 11 - Timer-Based Time Delay Generation
+  * @description    : Precise hardware millisecond delays using TIM2 Timer
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-#define RING_BUF_SIZE 128
-uint8_t ring_buffer[RING_BUF_SIZE];
-volatile uint16_t head = 0;
-volatile uint16_t tail = 0;
-uint8_t rx_temp;
+extern TIM_HandleTypeDef htim2;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM2_Init(void);
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-  if (huart->Instance == USART3) {
-    uint16_t next = (head + 1) % RING_BUF_SIZE;
-    if (next != tail) {
-      ring_buffer[head] = rx_temp;
-      head = next;
-    }
-    HAL_UART_Receive_IT(&huart3, &rx_temp, 1);
+void TIM2_Delay_ms(uint16_t ms)
+{
+  __HAL_TIM_SET_COUNTER(&htim2, 0);
+  HAL_TIM_Base_Start(&htim2);
+  while (__HAL_TIM_GET_COUNTER(&htim2) < ms);
+  HAL_TIM_Base_Stop(&htim2);
+}
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_TIM2_Init();
+
+  while (1)
+  {
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    TIM2_Delay_ms(500); // 500 ms hardware timer delay
   }
 }`,
     quiz: [
@@ -801,6 +1322,34 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   {
     id: "lab-12",
     number: 12,
+    youtubeUrl: "https://www.youtube.com/watch?v=U7mN4lz8gOM",
+    youtubeEmbedUrl: "https://www.youtube-nocookie.com/embed/U7mN4lz8gOM",
+    youtubeThumbnail: "/lab_files/EXP12/youtube_thumbnail.jpg",
+    files: [
+      {
+            "name": "WhatsApp Image 2026-10-03 at 00.30.51.jpeg",
+            "path": "/lab_files/EXP12/WhatsApp Image 2026-10-03 at 00.30.51.jpeg",
+            "type": "image"
+      },
+      {
+            "name": "WhatsApp Video 2026-10-04 at 15.21.11.mp4",
+            "path": "/lab_files/EXP12/WhatsApp Video 2026-10-04 at 15.21.11.mp4",
+            "type": "video"
+      },
+      {
+            "name": "youtube_thumbnail.jpg",
+            "path": "/lab_files/EXP12/youtube_thumbnail.jpg",
+            "type": "image"
+      },
+      {
+            "name": "YouTube Video Demonstration (ID: U7mN4lz8gOM)",
+            "path": "https://www.youtube.com/watch?v=U7mN4lz8gOM",
+            "embedUrl": "https://www.youtube-nocookie.com/embed/U7mN4lz8gOM",
+            "thumbnail": "/lab_files/EXP12/youtube_thumbnail.jpg",
+            "type": "youtube",
+            "youtubeId": "U7mN4lz8gOM"
+      }
+],
     title: "Synthesizing Data Streams from UART to I2C Peripheral Displays",
     subtitle: "Data Protocol Conversion, String Parsing, and Multi-Peripheral Synchronization",
     difficulty: "Intermediate",
@@ -831,13 +1380,45 @@ Data Pipeline:
       "Configure I2C1 Standard Mode (100 kHz).",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
-#include <string.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 12 - Pulse Width Modulation (PWM) LED Dimmer
+  * @description    : Generating PWM Signal on TIM2 Channel 1 (PA0) to vary LED brightness
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-// Bridges parsed UART strings to LCD screen
-void ProcessStream(char* stream) {
-  // Parse and route to I2C LCD
+extern TIM_HandleTypeDef htim2;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM2_Init(void);
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_TIM2_Init();
+
+  /* Start TIM2 PWM Channel 1 */
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+
+  uint16_t duty_cycle = 0;
+  int8_t step = 10;
+
+  while (1)
+  {
+    /* Update PWM Duty Cycle (CCR1) */
+    __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, duty_cycle);
+
+    duty_cycle += step;
+    if (duty_cycle >= 1000 || duty_cycle <= 0)
+    {
+      step = -step; // Reverse breathing direction
+    }
+    HAL_Delay(15);
+  }
 }`,
     quiz: [
       {
@@ -856,6 +1437,24 @@ void ProcessStream(char* stream) {
   {
     id: "lab-13",
     number: 13,
+    youtubeUrl: "https://www.youtube.com/watch?v=chwIShPhbuk",
+    youtubeEmbedUrl: "https://www.youtube-nocookie.com/embed/chwIShPhbuk",
+    youtubeThumbnail: "/lab_files/EXP13/youtube_thumbnail.jpg",
+    files: [
+      {
+            "name": "youtube_thumbnail.jpg",
+            "path": "/lab_files/EXP13/youtube_thumbnail.jpg",
+            "type": "image"
+      },
+      {
+            "name": "YouTube Video Demonstration (ID: chwIShPhbuk)",
+            "path": "https://www.youtube.com/watch?v=chwIShPhbuk",
+            "embedUrl": "https://www.youtube-nocookie.com/embed/chwIShPhbuk",
+            "thumbnail": "/lab_files/EXP13/youtube_thumbnail.jpg",
+            "type": "youtube",
+            "youtubeId": "chwIShPhbuk"
+      }
+],
     title: "Developing a Rule-Based Automated Control System Using UART Communication",
     subtitle: "State Machine Logic, Threshold Parsing, and Remote Actuator Control",
     difficulty: "Intermediate",
@@ -886,17 +1485,58 @@ Rules:
       "Configure PG3 as GPIO_Output for Relay.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
-#include <string.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 13 - Timer Input Capture Mode Frequency Measurement
+  * @description    : Measuring signal frequency using TIM3 Channel 1 Input Capture
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-void EvaluateCommand(char* cmd) {
-  if (strcmp(cmd, "RELAY=1") == 0) {
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET);
-    printf("ACK: RELAY_ENABLED\\r\\n");
-  } else if (strcmp(cmd, "RELAY=0") == 0) {
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_RESET);
-    printf("ACK: RELAY_DISABLED\\r\\n");
+extern TIM_HandleTypeDef htim3;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM3_Init(void);
+
+uint32_t val1 = 0, val2 = 0, difference = 0;
+uint8_t is_first_captured = 0;
+uint32_t signal_frequency = 0;
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
+  {
+    if (is_first_captured == 0)
+    {
+      val1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+      is_first_captured = 1;
+    }
+    else
+    {
+      val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+
+      if (val2 > val1) difference = val2 - val1;
+      else difference = (0xFFFF - val1) + val2;
+
+      signal_frequency = HAL_RCC_GetPCLK1Freq() / difference;
+      is_first_captured = 0;
+    }
+  }
+}
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_TIM3_Init();
+
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
+
+  while (1)
+  {
+    HAL_Delay(250);
   }
 }`,
     quiz: [
@@ -916,6 +1556,7 @@ void EvaluateCommand(char* cmd) {
   {
     id: "lab-14",
     number: 14,
+    files: [],
     title: "Designing a PWM Signal Generation Using STM32 Timers",
     subtitle: "Timer Prescaler, Auto-Reload Register (ARR), and Compare Register (CCR) Calculations",
     difficulty: "Intermediate",
@@ -949,24 +1590,44 @@ For 1 kHz output with 240 MHz clock:
       "PSC = 239, ARR = 999, Pulse = 0.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 14 - Analog-to-Digital Converter (ADC) Interface
+  * @description    : Reading Potentiometer Analog Voltage using ADC1 Channel 16 (PA0)
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-extern TIM_HandleTypeDef htim3;
+extern ADC_HandleTypeDef hadc1;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_ADC1_Init(void);
+
+uint32_t adc_raw_val = 0;
+float voltage = 0.0f;
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_TIM3_Init();
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
-
-  uint16_t pwm_val = 0;
-  int8_t step = 10;
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_ADC1_Init();
 
   while (1)
   {
-    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, pwm_val);
-    pwm_val += step;
-    if (pwm_val >= 1000 || pwm_val <= 0) step = -step;
-    HAL_Delay(15);
+    /* Start ADC Conversion */
+    HAL_ADC_Start(&hadc1);
+
+    /* Poll for conversion completion */
+    if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
+    {
+      adc_raw_val = HAL_ADC_GetValue(&hadc1); // 16-bit resolution (0 to 65535)
+      voltage = ((float)adc_raw_val / 65535.0f) * 3.3f; // Convert to Voltage (0 to 3.3V)
+    }
+
+    HAL_ADC_Stop(&hadc1);
+    HAL_Delay(100);
   }
 }`,
     quiz: [
@@ -981,6 +1642,7 @@ int main(void)
   {
     id: "lab-15",
     number: 15,
+    files: [],
     title: "Designing a Servo Motor Position Control Using PWM",
     subtitle: "50 Hz RC Servo Control with Precise 1 ms to 2 ms Pulse Width Synthesis",
     difficulty: "Intermediate",
@@ -1017,26 +1679,44 @@ Timer Configuration ($f_{CLK} = 240\\text{ MHz}$):
       "Confirm PA0 = TIM2_CH1.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 15 - Multi-Channel ADC Conversion Using DMA
+  * @description    : Circular DMA transfer of multi-channel ADC readings to memory buffer
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-extern TIM_HandleTypeDef htim2;
+#define ADC_CHANNELS 2
+uint32_t adc_dma_buffer[ADC_CHANNELS];
 
-void Set_Servo_Angle(uint8_t angle) {
-  // Map 0-180 degrees to CCR values 100-200
-  uint16_t ccr_val = 100 + ((angle * 100) / 180);
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, ccr_val);
-}
+extern ADC_HandleTypeDef hadc1;
+extern DMA_HandleTypeDef hdma_adc1;
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_ADC1_Init(void);
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_TIM2_Init();
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_ADC1_Init();
+
+  /* Start ADC1 Multi-Channel Conversion with Circular DMA */
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_dma_buffer, ADC_CHANNELS);
 
   while (1)
   {
-    Set_Servo_Angle(0);   HAL_Delay(1000); // 0 degrees
-    Set_Servo_Angle(90);  HAL_Delay(1000); // 90 degrees
-    Set_Servo_Angle(180); HAL_Delay(1000); // 180 degrees
+    uint32_t ch0_pot = adc_dma_buffer[0];
+    uint32_t ch1_sensor = adc_dma_buffer[1];
+
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    HAL_Delay(200);
   }
 }`,
     quiz: [
@@ -1051,6 +1731,7 @@ int main(void)
   {
     id: "lab-16",
     number: 16,
+    files: [],
     title: "Design and Implementation of a Bidirectional PWM-Controlled DC Motor Drive Using an H-Bridge Driver",
     subtitle: "L298N / L293D Dual H-Bridge Motor Driver Control with Direction Logic and PWM Speed Regulation",
     difficulty: "Intermediate",
@@ -1088,36 +1769,49 @@ $$V_{eff} = V_{supply} \\times \\text{Duty Cycle}$$`,
       "PSC = 239, ARR = 999 (1 kHz PWM).",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 16 - Digital-to-Analog Converter (DAC) Waveform Generation
+  * @description    : Generating Sine and Triangular Analog Waveforms on DAC1 Channel 1 (PA4)
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include <math.h>
 
-extern TIM_HandleTypeDef htim4;
+#define SINE_SAMPLES 32
+uint32_t sine_table[SINE_SAMPLES];
 
-void Motor_SetSpeedDir(int16_t speed) {
-  if (speed > 0) { // Forward
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, speed);
-  } else if (speed < 0) { // Reverse
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, -speed);
-  } else { // Stop
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13 | GPIO_PIN_14, GPIO_PIN_RESET);
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
+extern DAC_HandleTypeDef hdac1;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_DAC1_Init(void);
+
+void Generate_Sine_Table(void)
+{
+  for (int i = 0; i < SINE_SAMPLES; i++)
+  {
+    sine_table[i] = (uint32_t)((sin(i * 2.0 * 3.14159 / SINE_SAMPLES) + 1.0) * (4095.0 / 2.0));
   }
 }
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_TIM4_Init();
-  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_DAC1_Init();
+
+  Generate_Sine_Table();
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 
   while (1)
   {
-    Motor_SetSpeedDir(750);  HAL_Delay(2000); // 75% Forward
-    Motor_SetSpeedDir(0);    HAL_Delay(1000); // Stop
-    Motor_SetSpeedDir(-750); HAL_Delay(2000); // 75% Reverse
-    Motor_SetSpeedDir(0);    HAL_Delay(1000); // Stop
+    for (int i = 0; i < SINE_SAMPLES; i++)
+    {
+      HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, sine_table[i]);
+      HAL_Delay(1);
+    }
   }
 }`,
     quiz: [
@@ -1137,6 +1831,7 @@ int main(void)
   {
     id: "lab-17",
     number: 17,
+    files: [],
     title: "Designing a UART-Based Command-Controlled Servo Motor Positioning",
     subtitle: "Parsing Serial Angle Commands from PC Terminal to Drive PWM Servo Actuator",
     difficulty: "Intermediate",
@@ -1167,20 +1862,42 @@ int main(void)
       "Enable USART3 Asynchronous with NVIC RX Interrupt.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 17 - SPI Interface Flash Memory & OLED Display Driver
+  * @description    : Full-Duplex SPI SPI1 Transmit and Receive Protocol
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-extern TIM_HandleTypeDef htim2;
-extern UART_HandleTypeDef huart3;
+extern SPI_HandleTypeDef hspi1;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_SPI1_Init(void);
 
-void Parse_Servo_Command(char* cmd) {
-  int angle = 0;
-  if (sscanf(cmd, "ANG:%d", &angle) == 1) {
-    if (angle >= 0 && angle <= 180) {
-      uint16_t ccr = 100 + ((angle * 100) / 180);
-      __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, ccr);
-      printf("[ACK] Servo moved to %d deg (CCR=%u)\\r\\n", angle, ccr);
-    }
+uint8_t spi_tx_data[4] = {0x9F, 0x00, 0x00, 0x00}; // Read JEDEC ID Command
+uint8_t spi_rx_data[4];
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_SPI1_Init();
+
+  /* Pull Chip Select LOW */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+
+  /* SPI Full-Duplex Transfer */
+  HAL_SPI_TransmitReceive(&hspi1, spi_tx_data, spi_rx_data, 4, 500);
+
+  /* Pull Chip Select HIGH */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+
+  while (1)
+  {
+    HAL_Delay(500);
   }
 }`,
     quiz: [
@@ -1195,6 +1912,7 @@ void Parse_Servo_Command(char* cmd) {
   {
     id: "lab-18",
     number: 18,
+    files: [],
     title: "Designing a Single-Channel ADC Interfacing for Potentiometer Voltage Measurement",
     subtitle: "16-Bit Resolution ADC Sampling, LSB Calculations, and Analog Voltage Mapping",
     difficulty: "Beginner",
@@ -1227,24 +1945,43 @@ $$V_{IN} = \\text{RawADC} \\times \\left(\\frac{3.3\\text{ V}}{65535}\\right)$$`
       "Resolution = 16 bits, Data Alignment = Right.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 18 - Interfacing External I2C EEPROM Memory
+  * @description    : Reading and Writing Byte data to AT24C256 over I2C1
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-extern ADC_HandleTypeDef hadc1;
+#define EEPROM_ADDR 0xA0 // I2C Address of 24C256 EEPROM
+extern I2C_HandleTypeDef hi2c1;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
+
+uint8_t write_val = 0x42;
+uint8_t read_val = 0;
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_ADC1_Init(); MX_USART3_UART_Init();
-  HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_I2C1_Init();
+
+  /* Write byte 0x42 to EEPROM Memory Address 0x0010 */
+  HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDR, 0x0010, I2C_MEMADD_SIZE_16BIT, &write_val, 1, 500);
+  HAL_Delay(10); // Wait for EEPROM internal write cycle completion
+
+  /* Read byte back from EEPROM Memory Address 0x0010 */
+  HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDR, 0x0010, I2C_MEMADD_SIZE_16BIT, &read_val, 1, 500);
 
   while (1)
   {
-    HAL_ADC_Start(&hadc1);
-    if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
+    if (read_val == 0x42)
     {
-      uint32_t raw = HAL_ADC_GetValue(&hadc1);
-      float volts = (raw * 3.3f) / 65535.0f;
-      printf("Raw ADC: %lu | Voltage: %.3f V\\r\\n", raw, volts);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Green LED ON if verification succeeds
     }
     HAL_Delay(250);
   }
@@ -1261,6 +1998,18 @@ int main(void)
   {
     id: "lab-19",
     number: 19,
+    files: [
+      {
+            "name": "Experiment 19 Interfacing LM35 Temp.txt",
+            "path": "/lab_files/EXP19/Experiment 19 Interfacing LM35 Temp.txt",
+            "type": "document"
+      },
+      {
+            "name": "VID20260928003339.mp4",
+            "path": "/lab_files/EXP19/VID20260928003339.mp4",
+            "type": "video"
+      }
+],
     title: "Designing a Multi-Channel ADC Interfacing for LM35 Temperature Sensor Measurement",
     subtitle: "Precision Analog Signal Processing, Linear Transfer Function, and Calibration",
     difficulty: "Intermediate",
@@ -1293,27 +2042,54 @@ Example: If ADC measures $0.250\\text{ V}$ ($250\\text{ mV}$), $\\text{Temp} = 0
       "Resolution = 16 bits.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 19 - Interfacing LM35 Temperature Sensor with NUCLEO-H753ZI Using ADC
+  * @description    : Reading LM35 Analog Output on PA0 (ADC1_INP16) & Outputting Temperature over USART3
+  */
+/* USER CODE END Header */
+#include "main.h"
 #include <stdio.h>
+#include <string.h>
 
 extern ADC_HandleTypeDef hadc1;
+extern UART_HandleTypeDef huart3;
 
-float Read_LM35_Temperature(void) {
-  HAL_ADC_Start(&hadc1);
-  if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK) {
-    uint32_t raw = HAL_ADC_GetValue(&hadc1);
-    float volts = (raw * 3.3f) / 65535.0f;
-    return volts * 100.0f; // 10mV / deg C
-  }
-  return 0.0f;
-}
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_USART3_UART_Init(void);
 
-int main(void) {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_ADC1_Init(); MX_USART3_UART_Init();
-  while(1) {
-    float temp_c = Read_LM35_Temperature();
-    printf("LM35 Temperature: %.2f deg C | %.2f deg F\\r\\n", temp_c, (temp_c * 1.8f) + 32.0f);
-    HAL_Delay(500);
+uint32_t adc_val = 0;
+float voltage = 0.0f;
+float temperature_c = 0.0f;
+char uart_buf[64];
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_ADC1_Init();
+  MX_USART3_UART_Init();
+
+  while (1)
+  {
+    HAL_ADC_Start(&hadc1);
+
+    if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)
+    {
+      adc_val = HAL_ADC_GetValue(&hadc1); // 16-bit ADC value (0-65535)
+      voltage = ((float)adc_val / 65535.0f) * 3.3f; // Convert ADC raw value to Voltage
+      temperature_c = voltage * 100.0f; // LM35 Scale factor: 10 mV / °C (1 V = 100 °C)
+
+      sprintf(uart_buf, "LM35 Temp: %.2f C (ADC: %lu, Volt: %.3f V)\r\n", temperature_c, adc_val, voltage);
+      HAL_UART_Transmit(&huart3, (uint8_t*)uart_buf, strlen(uart_buf), 200);
+    }
+
+    HAL_ADC_Stop(&hadc1);
+    HAL_Delay(1000); // 1 Second Measurement Rate
   }
 }`,
     quiz: [
@@ -1328,6 +2104,18 @@ int main(void) {
   {
     id: "lab-20",
     number: 20,
+    files: [
+      {
+            "name": "Experiment 20.txt",
+            "path": "/lab_files/EXP20/Experiment 20.txt",
+            "type": "document"
+      },
+      {
+            "name": "VID20260928124154.mp4",
+            "path": "/lab_files/EXP20/VID20260928124154.mp4",
+            "type": "video"
+      }
+],
     title: "Multi-Channel ADC Interfacing for LDR-Based Ambient Light Measurement",
     subtitle: "Light Dependent Resistor (LDR) Voltage Divider Circuit & Lux Estimation",
     difficulty: "Intermediate",
@@ -1362,25 +2150,53 @@ As light intensity increases, $R_{LDR}$ drops, causing $V_{ADC}$ to rise towards
       "Resolution = 16 bits.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 20 - Interfacing LDR Sensor Module with NUCLEO-H753ZI Using ADC
+  * @description    : Measuring Light Intensity on PA4 (ADC1_INP18) & Outputting Percentages to Serial Monitor
+  */
+/* USER CODE END Header */
+#include "main.h"
 #include <stdio.h>
+#include <string.h>
 
 extern ADC_HandleTypeDef hadc1;
+extern UART_HandleTypeDef huart3;
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_USART3_UART_Init(void);
+
+uint32_t ldr_adc = 0;
+float ldr_voltage = 0.0f;
+float light_percent = 0.0f;
+char tx_buf[64];
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_ADC1_Init(); MX_USART3_UART_Init();
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_ADC1_Init();
+  MX_USART3_UART_Init();
 
   while (1)
   {
     HAL_ADC_Start(&hadc1);
-    if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
+
+    if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK)
     {
-      uint32_t raw = HAL_ADC_GetValue(&hadc1);
-      float v_ldr = (raw * 3.3f) / 65535.0f;
-      char* light_lvl = (v_ldr < 0.8f) ? "DARK" : (v_ldr < 2.0f) ? "NORMAL" : "BRIGHT";
-      printf("LDR Voltage: %.2f V | Ambient Condition: %s\\r\\n", v_ldr, light_lvl);
+      ldr_adc = HAL_ADC_GetValue(&hadc1);
+      ldr_voltage = ((float)ldr_adc / 65535.0f) * 3.3f;
+      light_percent = (1.0f - (ldr_voltage / 3.3f)) * 100.0f; // Calculate Light Intensity %
+
+      sprintf(tx_buf, "LDR Light: %.1f%% (ADC: %lu, Volt: %.2fV)\r\n", light_percent, ldr_adc, ldr_voltage);
+      HAL_UART_Transmit(&huart3, (uint8_t*)tx_buf, strlen(tx_buf), 200);
     }
+
+    HAL_ADC_Stop(&hadc1);
     HAL_Delay(500);
   }
 }`,
@@ -1396,6 +2212,18 @@ int main(void)
   {
     id: "lab-21",
     number: 21,
+    files: [
+      {
+            "name": "# Experiment 21. Interfacing LM35 a.txt",
+            "path": "/lab_files/EXP21/# Experiment 21. Interfacing LM35 a.txt",
+            "type": "document"
+      },
+      {
+            "name": "VID20260928141703.mp4",
+            "path": "/lab_files/EXP21/VID20260928141703.mp4",
+            "type": "video"
+      }
+],
     title: "Displaying LM35 Temperature and LDR Light Intensity on an I²C LCD",
     subtitle: "Multi-Sensor ADC Acquisition & Real-Time Dual Line LCD Telemetry Rendering",
     difficulty: "Intermediate",
@@ -1427,12 +2255,79 @@ ADC Scan Mode automatically sequences through Channel 10 (LM35) and Channel 13 (
       "Enable I2C1 in Standard Mode (100 kHz).",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 21 - Interfacing LM35 and LDR Displaying on I2C 16x2 LCD
+  * @description    : Dual-Channel ADC Sampling (LM35 PA0 & LDR PA4) rendered on 16x2 I2C LCD
+  */
+/* USER CODE END Header */
+#include "main.h"
 #include <stdio.h>
 
-// Sampling routine updates LCD display lines 1 & 2
-void Update_Sensor_LCD(float temp, float light_v) {
-  // Renders formatted strings to I2C LCD
+extern ADC_HandleTypeDef hadc1;
+extern I2C_HandleTypeDef hi2c1;
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_I2C1_Init(void);
+
+void LCD_Init(void);
+void LCD_SetCursor(uint8_t row, uint8_t col);
+void LCD_SendString(char *str);
+uint32_t Read_ADC_Channel(uint32_t channel);
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_ADC1_Init();
+  MX_I2C1_Init();
+
+  LCD_Init();
+  LCD_SetCursor(0, 0);
+  LCD_SendString("LM35 & LDR Monitor");
+
+  char line1[17];
+  char line2[17];
+
+  while (1)
+  {
+    /* Sample LM35 on ADC1 Channel 16 */
+    uint32_t temp_raw = Read_ADC_Channel(ADC_CHANNEL_16);
+    float temp_c = (((float)temp_raw / 65535.0f) * 3.3f) * 100.0f;
+
+    /* Sample LDR on ADC1 Channel 18 */
+    uint32_t ldr_raw = Read_ADC_Channel(ADC_CHANNEL_18);
+    float light_pct = (1.0f - (((float)ldr_raw / 65535.0f))) * 100.0f;
+
+    sprintf(line1, "Temp : %.1f C   ", temp_c);
+    sprintf(line2, "Light: %.1f%%   ", light_pct);
+
+    LCD_SetCursor(0, 0);
+    LCD_SendString(line1);
+    LCD_SetCursor(1, 0);
+    LCD_SendString(line2);
+
+    HAL_Delay(1000);
+  }
+}
+
+uint32_t Read_ADC_Channel(uint32_t channel)
+{
+  ADC_ChannelConfTypeDef sConfig = {0};
+  sConfig.Channel = channel;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_64CYCLES_5;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+  HAL_ADC_Start(&hadc1);
+  HAL_ADC_PollForConversion(&hadc1, 100);
+  uint32_t val = HAL_ADC_GetValue(&hadc1);
+  HAL_ADC_Stop(&hadc1);
+  return val;
 }`,
     quiz: [
       {
@@ -1446,6 +2341,7 @@ void Update_Sensor_LCD(float temp, float light_v) {
   {
     id: "lab-22",
     number: 22,
+    files: [],
     title: "Intelligent Environmental Control: Relay Switching Based on LDR and DC Motor Speed Control Based on LM35",
     subtitle: "Closed-Loop Closed Feedback Actuator Automation (Smart HVAC & Lighting Control)",
     difficulty: "Advanced",
@@ -1483,26 +2379,68 @@ void Update_Sensor_LCD(float temp, float light_v) {
       "Configure PG3 as GPIO_Output for Relay.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 22 - Real-Time Operating System (FreeRTOS) Task Creation
+  * @description    : Multitasking with 2 FreeRTOS Tasks: Task1 (Blink LED), Task2 (Telemetry)
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include "cmsis_os.h"
 
-extern TIM_HandleTypeDef htim4;
-extern ADC_HandleTypeDef hadc1;
+osThreadId_t TaskLEDHandle;
+osThreadId_t TaskTelemetryHandle;
 
-void Environmental_Control_Loop(float temp_c, float ldr_volts) {
-  /* 1. Smart Lighting Control */
-  if (ldr_volts < 1.0f) {
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_SET); // Dark -> Relay ON
-  } else {
-    HAL_GPIO_WritePin(GPIOG, GPIO_PIN_3, GPIO_PIN_RESET); // Bright -> Relay OFF
+const osThreadAttr_t TaskLED_attributes = {
+  .name = "TaskLED",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
+const osThreadAttr_t TaskTelemetry_attributes = {
+  .name = "TaskTelemetry",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+
+void StartTaskLED(void *argument);
+void StartTaskTelemetry(void *argument);
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+
+  /* Initialize FreeRTOS Kernel */
+  osKernelInitialize();
+
+  /* Create Tasks */
+  TaskLEDHandle = osThreadNew(StartTaskLED, NULL, &TaskLED_attributes);
+  TaskTelemetryHandle = osThreadNew(StartTaskTelemetry, NULL, &TaskTelemetry_attributes);
+
+  /* Start Scheduler */
+  osKernelStart();
+
+  while (1) {}
+}
+
+void StartTaskLED(void *argument)
+{
+  for(;;)
+  {
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    osDelay(500); // FreeRTOS Tick Delay
   }
+}
 
-  /* 2. Smart Cooling Fan Control */
-  if (temp_c > 30.0f) {
-    uint16_t pwm = (uint16_t)((temp_c - 30.0f) * 100.0f);
-    if (pwm > 1000) pwm = 1000;
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, pwm);
-  } else {
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0); // Fan OFF
+void StartTaskTelemetry(void *argument)
+{
+  for(;;)
+  {
+    /* Background Telemetry Processing */
+    osDelay(1000);
   }
 }`,
     quiz: [
@@ -1522,6 +2460,7 @@ void Environmental_Control_Loop(float temp_c, float ldr_volts) {
   {
     id: "lab-23",
     number: 23,
+    files: [],
     title: "Monitoring and Transmission of Sensor Data (LM35 & LDR) to PC with Actuator Status Display",
     subtitle: "Complete IoT Gateway Node: Multi-Sensor Sampling, Local LCD Telemetry & PC UART Console",
     difficulty: "Advanced",
@@ -1553,13 +2492,70 @@ void Environmental_Control_Loop(float temp_c, float ldr_volts) {
       "Configure ADC1 Scan Mode, TIM4 PWM, I2C1, and USART3.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 23 - Inter-Task Communication in FreeRTOS Using Queues
+  * @description    : Queue Passing Sensor Data between Producer Task and Consumer Task
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include "cmsis_os.h"
 
-void Broadcast_Telemetry(float temp, float light_v, uint8_t relay_st, uint16_t fan_pwm) {
-  /* Transmit structured JSON telemetry over UART */
-  printf("{\\\"temp\\\":%.2f,\\\"light_v\\\":%.2f,\\\"relay\\\":%u,\\\"fan_speed\\\":%u}\\r\\n",
-          temp, light_v, relay_st, fan_pwm);
+osMessageQueueId_t QueueSensorDataHandle;
+const osMessageQueueAttr_t QueueSensorData_attributes = {
+  .name = "QueueSensorData"
+};
+
+typedef struct {
+  uint32_t sensor_val;
+  uint32_t timestamp;
+} SensorMsg_t;
+
+void StartProducerTask(void *argument);
+void StartConsumerTask(void *argument);
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+
+  osKernelInitialize();
+
+  /* Create FreeRTOS Queue for 10 SensorMsg_t items */
+  QueueSensorDataHandle = osMessageQueueNew(10, sizeof(SensorMsg_t), &QueueSensorData_attributes);
+
+  osThreadNew(StartProducerTask, NULL, NULL);
+  osThreadNew(StartConsumerTask, NULL, NULL);
+
+  osKernelStart();
+  while (1) {}
+}
+
+void StartProducerTask(void *argument)
+{
+  SensorMsg_t msg;
+  uint32_t counter = 0;
+  for(;;)
+  {
+    msg.sensor_val = counter++;
+    msg.timestamp = osKernelGetTickCount();
+    osMessageQueuePut(QueueSensorDataHandle, &msg, 0U, osWaitForever);
+    osDelay(500);
+  }
+}
+
+void StartConsumerTask(void *argument)
+{
+  SensorMsg_t received_msg;
+  for(;;)
+  {
+    if (osMessageQueueGet(QueueSensorDataHandle, &received_msg, NULL, osWaitForever) == osOK)
+    {
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // Toggle LED on msg receive
+    }
+  }
 }`,
     quiz: [
       {
@@ -1578,6 +2574,7 @@ void Broadcast_Telemetry(float temp, float light_v, uint8_t relay_st, uint16_t f
   {
     id: "lab-24",
     number: 24,
+    files: [],
     title: "Developing a CAN Peripheral Initialization and Loopback Communication Test",
     subtitle: "FDCAN Bus Controller Initialization, Bit Timing (500 kbps), and Self-Test Diagnostics",
     difficulty: "Advanced",
@@ -1609,46 +2606,40 @@ Disconnects physical TX/RX pins internally. Transmitted messages are fed directl
       "Confirm PD0 = FDCAN1_RX, PD1 = FDCAN1_TX.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
-#include <stdio.h>
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 24 - Hardware Cryptography Engine (AES-128 / SHA-256)
+  * @description    : Accelerated Hardware SHA-256 Hash Computation on STM32H753ZI
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include <string.h>
 
-extern FDCAN_HandleTypeDef hfdcan1;
+extern HASH_HandleTypeDef hhash;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_HASH_Init(void);
 
-FDCAN_TxHeaderTypeDef TxHeader;
-FDCAN_RxHeaderTypeDef RxHeader;
-uint8_t TxData[8] = {'K', 'L', 'U', '-', 'C', 'A', 'N', '1'};
-uint8_t RxData[8];
+uint8_t input_msg[] = "eLearnTech@kl STM32H753ZI Hardware Cryptography Test";
+uint8_t sha256_output[32]; // 256 bits = 32 bytes
 
 int main(void)
 {
-  HAL_Init(); SystemClock_Config(); MX_GPIO_Init(); MX_FDCAN1_Init(); MX_USART3_UART_Init();
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_HASH_Init();
 
-  /* Configure CAN Frame Header */
-  TxHeader.Identifier = 0x123;
-  TxHeader.IdType = FDCAN_STANDARD_ID;
-  TxHeader.TxFrameType = FDCAN_DATA_FRAME;
-  TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-  TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-  TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
-  TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
-  TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-  TxHeader.MessageMarker = 0;
+  /* Execute Hardware SHA-256 Hash Calculation */
+  HAL_HASH_SHA256_Start(&hhash, input_msg, strlen((char*)input_msg), sha256_output, 1000);
 
-  HAL_FDCAN_Start(&hfdcan1);
-
-  /* Send CAN Message Frame */
-  if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &TxHeader, TxData) == HAL_OK) {
-    printf("FDCAN Loopback Tx Success! ID: 0x123\\r\\n");
+  while (1)
+  {
+    /* Indicate HASH Calculation Successful */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_Delay(1000);
   }
-
-  HAL_Delay(50);
-
-  /* Read from Rx FIFO 0 */
-  if (HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO_0, &RxHeader, RxData) == HAL_OK) {
-    printf("FDCAN Loopback Rx Received: %s\\r\\n", RxData);
-  }
-
-  while (1) {}
 }`,
     quiz: [
       {
@@ -1667,6 +2658,7 @@ int main(void)
   {
     id: "lab-25",
     number: 25,
+    files: [],
     title: "Developing a CAN Communication Between Two STM32 Nucleo Boards",
     subtitle: "Physical Differential CAN Bus Interfacing (CAN_H / CAN_L), SN65HVD230 Transceivers, and Hardware Filtering",
     difficulty: "Advanced",
@@ -1699,20 +2691,50 @@ Bus termination ($120\\>\\Omega$ resistors at each extreme end) prevents signal 
       "Enable FDCAN RX FIFO 0 interrupt.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 25 - Low-Power Operating Modes (Sleep, Stop, Standby)
+  * @description    : Entering Low-Power Sleep Mode and Wakeup via EXTI Line 13 Interrupt
+  */
+/* USER CODE END Header */
+#include "main.h"
 
-extern FDCAN_HandleTypeDef hfdcan1;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
-void NodeA_SendButtonEvent(void) {
-  FDCAN_TxHeaderTypeDef tx;
-  tx.Identifier = 0x321;
-  tx.IdType = FDCAN_STANDARD_ID;
-  tx.TxFrameType = FDCAN_DATA_FRAME;
-  tx.DataLength = FDCAN_DLC_BYTES_1;
-  tx.FDFormat = FDCAN_CLASSIC_CAN;
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
 
-  uint8_t msg = 0x01; // Button pressed flag
-  HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx, &msg);
+  while (1)
+  {
+    /* Turn ON Green LED for 2 seconds */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_Delay(2000);
+
+    /* Turn OFF LED before entering Sleep */
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+    /* Suspend SysTick before entering low power mode */
+    HAL_SuspendTick();
+
+    /* Enter Sleep Mode (CPU clock stopped, peripherals remain active) */
+    HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+    /* CPU Wakes Up Here after EXTI Push-Button Interrupt */
+    HAL_ResumeTick();
+  }
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == GPIO_PIN_13)
+  {
+    /* EXTI Button Wakeup Callback */
+  }
 }`,
     quiz: [
       {
@@ -1731,6 +2753,7 @@ void NodeA_SendButtonEvent(void) {
   {
     id: "lab-26",
     number: 26,
+    files: [],
     title: "Designing a Sensor Data Acquisition and Transmission Over CAN Bus",
     subtitle: "Distributed Automotive Sensor Node: Multi-Channel ADC Acquisition, Payload Packing, and CAN Transmission",
     difficulty: "Advanced",
@@ -1764,24 +2787,63 @@ Node A packages sensor data into binary bytes and broadcasts CAN Frame \`ID: 0x4
       "Node B: Configure FDCAN1 with Filter ID 0x400 and I2C1 LCD.",
       "Generate Code."
     ],
-    codeSnippet: `#include "main.h"
+    codeSnippet: `/* USER CODE BEGIN Header */
+/**
+  * @file           : main.c
+  * @brief          : Experiment 26 - Ethernet MAC / LwIP Network Communication
+  * @description    : Initializing LwIP TCP/IP Stack & Transmitting UDP Telemetry Packets over RJ45
+  */
+/* USER CODE END Header */
+#include "main.h"
+#include "lwip.h"
+#include "udp.h"
 #include <string.h>
 
-extern FDCAN_HandleTypeDef hfdcan1;
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
-void Transmit_Sensor_CAN_Packet(float temp, float light_v) {
-  FDCAN_TxHeaderTypeDef tx;
-  tx.Identifier = 0x400;
-  tx.IdType = FDCAN_STANDARD_ID;
-  tx.TxFrameType = FDCAN_DATA_FRAME;
-  tx.DataLength = FDCAN_DLC_BYTES_8;
-  tx.FDFormat = FDCAN_CLASSIC_CAN;
+void Send_UDP_Telemetry(void)
+{
+  struct udp_pcb *upcb = udp_new();
+  ip_addr_t DestIPaddr;
+  IP_ADDR4(&DestIPaddr, 192, 168, 1, 100); // Target PC IP Address
 
-  uint8_t payload[8];
-  memcpy(&payload[0], &temp, 4);    // Pack 4-byte float temp
-  memcpy(&payload[4], &light_v, 4); // Pack 4-byte float light_v
+  if (upcb != NULL)
+  {
+    udp_connect(upcb, &DestIPaddr, 5000); // Target UDP Port 5000
+    char data[] = "Hello from STM32H753ZI Ethernet LwIP!";
+    struct pbuf *p = pbuf_alloc(PBUF_TRANSPORT, strlen(data), PBUF_RAM);
+    if (p != NULL)
+    {
+      memcpy(p->payload, data, strlen(data));
+      udp_send(upcb, p);
+      pbuf_free(p);
+    }
+    udp_remove(upcb);
+  }
+}
 
-  HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &tx, payload);
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_LWIP_Init();
+
+  while (1)
+  {
+    /* Handle LwIP Network Packets */
+    MX_LWIP_Process();
+
+    /* Periodically Transmit UDP Telemetry Packet */
+    static uint32_t last_tx = 0;
+    if (HAL_GetTick() - last_tx >= 2000)
+    {
+      last_tx = HAL_GetTick();
+      Send_UDP_Telemetry();
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+    }
+  }
 }`,
     quiz: [
       {

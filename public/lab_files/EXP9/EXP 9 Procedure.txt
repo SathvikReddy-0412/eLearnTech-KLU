@@ -1,0 +1,469 @@
+EXPERIMENT 9 — Procedure
+
+
+
+
+
+
+1. Open the STM32CubeIDE Project
+Open STM32CubeIDE.
+Open your STM32H753ZI Nucleo project.
+Double-click the .ioc file.
+Go to Pinout & Configuration.
+
+
+
+
+
+
+
+2. Configure USART3
+
+Go to:
+
+Connectivity → USART3
+
+Set:
+
+Mode → Asynchronous
+
+Verify the pins:
+
+PD8 → USART3_TX
+PD9 → USART3_RX
+
+The connections are:
+
+Signal	STM32H753ZI
+USART3_TX	PD8
+USART3_RX	PD9
+
+The PC sends data through the ST-LINK Virtual COM Port to USART3_RX (PD9).
+
+
+
+
+
+
+
+
+
+
+3. USART3 Parameter Settings
+
+Go to:
+
+USART3 → Parameter Settings
+
+Set:
+
+Baud Rate          : 115200
+Word Length        : 8 Bits
+Parity             : None
+Stop Bits          : 1
+Mode               : TX and RX
+Hardware Flow Ctrl : None
+Oversampling       : 16
+
+So the communication format is:
+
+115200-8-N-1
+
+
+
+
+
+
+
+
+
+4. Enable USART3 NVIC Interrupt
+
+Go to:
+
+USART3 → NVIC Settings
+
+Enable:
+
+☑ USART3 global interrupt
+
+For this experiment, however, the actual reception will still use:
+
+HAL_UART_Receive()
+
+which is polling mode.
+
+The NVIC setting is enabled because it will be used in the later interrupt-based UART experiment.
+
+
+
+
+
+
+
+
+
+
+
+5. Configure the LED
+
+For the NUCLEO-H753ZI, use the on-board user LED defined by your CubeMX project.
+
+If CubeMX has already generated:
+
+LD2_Pin
+LD2_GPIO_Port
+
+you can use:
+
+HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+
+to turn it ON and:
+
+HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+to turn it OFF.
+
+Do not manually change the LED pin if CubeMX has already assigned the board's LED definition.
+
+
+
+
+
+
+
+
+
+
+6. Generate Code
+
+Click:
+
+Project → Generate Code
+
+Then open:
+
+Core → Src → main.c
+
+
+
+
+
+
+
+
+7. Add the Required Header
+
+At the top of main.c, make sure you have:
+
+#include "main.h"
+#include "string.h"
+
+
+
+
+
+
+
+
+
+
+
+8. Declare the Receive Variable
+
+Inside the user-variable section, add:
+
+uint8_t rxByte;
+
+For example:
+
+/* USER CODE BEGIN PV */
+
+uint8_t rxByte;
+
+/* USER CODE END PV */
+
+
+
+
+
+
+
+
+
+
+9. Add the UART Reception Code
+
+Inside:
+
+while (1)
+{
+
+add:
+
+HAL_UART_Receive(&huart3, &rxByte, 1, HAL_MAX_DELAY);
+
+if (rxByte == '1')
+{
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+
+    char msg[] = "LED ON\r\n";
+
+    HAL_UART_Transmit(&huart3,
+                      (uint8_t *)msg,
+                      strlen(msg),
+                      HAL_MAX_DELAY);
+}
+else if (rxByte == '0')
+{
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+    char msg[] = "LED OFF\r\n";
+
+    HAL_UART_Transmit(&huart3,
+                      (uint8_t *)msg,
+                      strlen(msg),
+                      HAL_MAX_DELAY);
+}
+else
+{
+    char msg[] = "Unknown command\r\n";
+
+    HAL_UART_Transmit(&huart3,
+                      (uint8_t *)msg,
+                      strlen(msg),
+                      HAL_MAX_DELAY);
+}
+Important
+
+For Experiment 9, use:
+
+HAL_UART_Receive(&huart3, ...)
+
+not:
+
+HAL_UART_Receive(&huart2, ...)
+
+because your H753ZI project is configured for USART3.
+
+Your existing project already has huart3 and MX_USART3_UART_Init() generated.
+
+
+
+
+
+
+
+
+
+10. Build the Project
+Press:
+Ctrl + S
+Click the Build button.
+Make sure the project builds with:
+0 errors
+
+
+
+
+
+
+
+
+11. Connect the NUCLEO-H753ZI
+
+Connect the board to the PC through the ST-LINK USB connector.
+
+The communication path is:
+
+PC Serial Monitor
+       ↓
+     USB
+       ↓
+   ST-LINK
+       ↓
+ USART3_RX
+     PD9
+       ↓
+   STM32H753ZI
+
+For replies:
+
+STM32H753ZI
+     ↓
+ USART3_TX
+    PD8
+     ↓
+   ST-LINK
+     ↓
+     USB
+     ↓
+PC Serial Monitor
+
+
+
+
+
+
+
+
+
+12. Program the STM32
+
+Click:
+
+Run → Run
+
+or press:
+
+Ctrl + F11
+
+Program the NUCLEO-H753ZI.
+
+
+
+
+
+
+
+
+13. Open STM32CubeIDE Serial Monitor
+
+In STM32CubeIDE:
+
+Window
+   ↓
+Show View
+   ↓
+Other...
+   ↓
+Terminal
+   ↓
+Terminal
+
+Open a new terminal connection.
+
+Select:
+
+Connection Type: Serial
+
+Select the ST-LINK Virtual COM Port.
+
+For example:
+
+COM3
+
+Use whatever COM number appears on your PC.
+
+
+
+
+
+
+
+
+
+
+14. Configure Serial Monitor
+
+Set:
+
+Port       : Your ST-LINK COM port
+Baud Rate  : 115200
+Data Bits  : 8
+Parity     : None
+Stop Bits  : 1
+Flow Ctrl  : None
+
+Then click:
+
+Open
+
+
+
+
+
+
+
+
+
+
+15. Test Command 1
+
+In the Serial Monitor, type:
+
+1
+
+and send it.
+
+The STM32 receives:
+
+'1'
+
+and executes:
+
+HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+
+The LED turns ON.
+
+The Serial Monitor displays:
+
+LED ON
+
+
+
+
+
+
+
+
+
+
+16. Test Command 0
+
+Send:
+
+0
+
+The STM32 executes:
+
+HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+The LED turns OFF.
+
+The Serial Monitor displays:
+
+LED OFF
+
+
+
+
+
+
+
+
+
+17. Test an Unknown Command
+
+Send:
+
+x
+
+The STM32 does not recognize the command.
+
+The Serial Monitor displays:
+
+Unknown command
+
+
+
+
+
+
+
+
+18. Expected Result
+PC sends	STM32 action	Serial Monitor
+1	LED ON	LED ON
+0	LED OFF	LED OFF
+x	No LED change	Unknown command

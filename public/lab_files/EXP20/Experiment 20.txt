@@ -1,0 +1,213 @@
+**Experiment 20: Interfacing LDR Module with NUCLEO-H753ZI Using ADC**
+
+### Aim
+
+To interface an LDR module with the NUCLEO-H753ZI board and measure the relative light intensity using ADC1. The ADC value, voltage, and calculated light intensity are displayed on the serial monitor through USART3.
+
+### Requirements
+
+* NUCLEO-H753ZI
+* LDR sensor module
+* Jumper wires
+* USB cable
+* STM32CubeIDE
+* Serial Monitor / Serial Terminal
+
+### Hardware Connections
+
+| LDR Module Pin | NUCLEO-H753ZI |
+| -------------- | ------------- |
+| VCC            | 3.3V          |
+| GND            | GND           |
+| AO             | PA4           |
+
+The LDR module's analog output is connected to **PA4**, which corresponds to **ADC1 Channel 18**.
+
+### Procedure
+
+1. Open **STM32CubeIDE**.
+
+2. Create a new STM32 project and select the **NUCLEO-H753ZI** board or STM32H753ZITx microcontroller.
+
+3. Open the generated `.ioc` file.
+
+4. In the Pinout and Configuration section, configure **PA4 as ADC1_INP18**.
+
+5. Connect the LDR module's **AO pin to PA4**.
+
+6. Configure **ADC1** with the following settings:
+
+   * Resolution: **16-bit**
+   * Scan Conversion Mode: **Disabled**
+   * Continuous Conversion Mode: **Disabled**
+   * Number of Conversions: **1**
+   * External Trigger: **Software Start**
+   * Conversion Mode: **Single-ended**
+
+   The supplied program uses a 16-bit ADC with one software-triggered conversion.
+
+7. Configure the ADC channel:
+
+   * Channel: **ADC1_INP18**
+   * Rank: **1**
+   * Sampling Time: **64.5 Cycles**
+   * Single-ended: **Enabled**
+
+   The provided code specifically configures ADC Channel 18 and a 64.5-cycle sampling time.
+
+8. Configure **USART3** in asynchronous mode:
+
+   * Baud Rate: **115200**
+
+   * Word Length: **8 Bits**
+
+   * Parity: **None**
+
+   * Stop Bits: **1**
+
+   * Hardware Flow Control: **None**
+
+9. Generate the code using **Project → Generate Code**.
+
+10. Add the required header files:
+
+```c
+#include "string.h"
+#include "stdio.h"
+```
+
+11. Declare the required variables:
+
+```c
+uint32_t adc_value = 0;
+uint32_t voltage_mV = 0;
+uint32_t intensity = 0;
+char uart_buffer[200];
+```
+
+12. Initialize all configured peripherals in the `main()` function.
+
+13. Add a short delay after initialization:
+
+```c
+HAL_Delay(500);
+```
+
+This allows the peripherals to stabilize before measurements begin.
+
+14. Start the ADC conversion using:
+
+```c
+HAL_ADC_Start(&hadc1);
+```
+
+15. Wait for the ADC conversion to complete:
+
+```c
+HAL_ADC_PollForConversion(&hadc1, 100);
+```
+
+16. Read the ADC value:
+
+```c
+adc_value = HAL_ADC_GetValue(&hadc1);
+```
+
+17. Since the ADC is 16-bit, the ADC value ranges from **0 to 65535**.
+
+18. Convert the ADC value into voltage using:
+
+```c
+voltage_mV = (adc_value * 3300UL) / 65535UL;
+```
+
+This converts the ADC reading into millivolts using a 3.3 V reference.
+
+19. Calculate the relative light intensity. For this particular LDR module, the tested polarity is:
+
+* More light → **lower ADC value**
+* Less light → **higher ADC value**
+
+Therefore, the ADC percentage is inverted using:
+
+```c
+intensity =
+    100UL -
+    ((adc_value * 100UL) / 65535UL);
+```
+
+20. Limit the intensity value to a maximum of 100%:
+
+```c
+if (intensity > 100UL)
+{
+    intensity = 100UL;
+}
+```
+
+21. Display the ADC value, voltage, and light intensity using USART3.
+
+22. Stop the ADC conversion:
+
+```c
+HAL_ADC_Stop(&hadc1);
+```
+
+23. Add a delay of 1 second:
+
+```c
+HAL_Delay(1000);
+```
+
+Therefore, one LDR reading is taken approximately every second.
+
+24. Build the project using **Project → Build Project** or press **Ctrl + B**.
+
+25. Connect the NUCLEO-H753ZI board to the computer through the ST-LINK USB connection.
+
+26. Download and run the program on the NUCLEO-H753ZI.
+
+27. Open the Serial Monitor and select the appropriate ST-LINK Virtual COM Port.
+
+28. Configure the serial terminal as:
+
+```text
+Baud Rate : 115200
+Data Bits : 8
+Parity    : None
+Stop Bits : 1
+```
+
+29. Observe the ADC value, voltage, and calculated light intensity.
+
+30. Shine a light directly onto the LDR module. The intensity value should increase according to the polarity implemented in the program.
+
+31. Cover the LDR sensor with your hand. The ADC value should increase and the calculated intensity should decrease.
+
+### Expected Output
+
+```text
+========================================
+       EXPERIMENT 20 - LDR SENSOR
+       STM32H753ZI - ADC1_INP18
+========================================
+ADC Resolution : 16-bit
+ADC Range      : 0 - 65535
+Reference      : 3.3 V
+Mode           : Relative Light Intensity
+----------------------------------------
+More Light  -> Higher Intensity
+Less Light  -> Lower Intensity
+----------------------------------------
+
+ADC Value : XXXXX / 65535
+Voltage   : X.XXX V
+Intensity : XX %
+----------------------------------------
+```
+
+The program sends the ADC value, voltage, and intensity through USART3.
+
+### Result
+
+The LDR module was successfully interfaced with the NUCLEO-H753ZI. The analog output of the LDR module was read using **ADC1 Channel 18**, converted into voltage, and used to determine the **relative light intensity**. The measured ADC value, voltage, and intensity were successfully displayed on the serial monitor through USART3.

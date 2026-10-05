@@ -1,0 +1,170 @@
+**Experiment 19: Interfacing LM35 Temperature Sensor with NUCLEO-H753ZI Using ADC**
+
+### Aim
+
+To interface an LM35 temperature sensor with the NUCLEO-H753ZI board and measure temperature using ADC1. The measured temperature is displayed through USART3 on the serial monitor.
+
+### Requirements
+
+* NUCLEO-H753ZI
+* LM35 temperature sensor
+* Jumper wires
+* USB cable
+* STM32CubeIDE
+* Serial terminal/Serial Monitor
+
+### Hardware Connections
+
+| LM35 Pin | NUCLEO-H753ZI |
+| -------- | ------------- |
+| VCC      | 3.3V          |
+| VOUT     | PA0           |
+| GND      | GND           |
+
+PA0 is configured as **ADC1 Channel 16**.
+
+### Procedure
+
+1. Open **STM32CubeIDE**.
+
+2. Create a new STM32 project and select the **NUCLEO-H753ZI** board or STM32H753ZITx microcontroller.
+
+3. Open the generated `.ioc` file.
+
+4. In the Pinout and Configuration section, configure **PA0 as ADC1_INP16**.
+
+5. Open **ADC1** configuration and select:
+
+   * Resolution: **16-bit**
+   * Scan Conversion Mode: **Disabled**
+   * Continuous Conversion Mode: **Disabled**
+   * Number of Conversions: **1**
+   * External Trigger: **Software Start**
+   * Conversion Mode: **Single-ended**
+
+6. Configure the ADC sampling time to **64.5 cycles**. The provided program uses ADC1 Channel 16 with this sampling time.
+
+7. Configure **USART3** in asynchronous mode with the following settings:
+
+   * Baud Rate: **115200**
+   * Word Length: **8 Bits**
+   * Parity: **None**
+   * Stop Bits: **1**
+   * Hardware Flow Control: **None**
+
+8. Generate the STM32CubeIDE code.
+
+9. Add the required header files:
+
+   ```c
+   #include <stdio.h>
+   #include <string.h>
+   ```
+
+10. Declare the ADC variable and UART buffer:
+
+```c
+uint32_t adcValue = 0;
+char uartBuffer[150];
+```
+
+11. Initialize all configured peripherals in `main()`.
+
+12. Calibrate ADC1 using:
+
+```c
+HAL_ADCEx_Calibration_Start(&hadc1,
+                            ADC_CALIB_OFFSET,
+                            ADC_SINGLE_ENDED);
+```
+
+The provided program performs ADC calibration before taking measurements.
+
+13. Start ADC conversion using:
+
+```c
+HAL_ADC_Start(&hadc1);
+```
+
+14. Wait for the ADC conversion to complete using:
+
+```c
+HAL_ADC_PollForConversion(&hadc1, 100);
+```
+
+15. Read the converted ADC value using:
+
+```c
+adcValue = HAL_ADC_GetValue(&hadc1);
+```
+
+16. Convert the ADC value into voltage. Since the ADC is configured as a 16-bit ADC, the conversion range is 0 to 65535. The program uses:
+
+```c
+voltage_mV = (adcValue * 3300UL) / 65535UL;
+```
+
+This converts the ADC reading into millivolts.
+
+17. Convert the LM35 output voltage into temperature. The LM35 provides approximately **10 mV per degree Celsius**. Therefore:
+
+```c
+temperatureValue = voltage_mV / 10UL;
+```
+
+18. Send the ADC value, voltage, and temperature through USART3 using `HAL_UART_Transmit()`.
+
+19. Stop the ADC conversion:
+
+```c
+HAL_ADC_Stop(&hadc1);
+```
+
+20. Add a delay of 1 second before taking the next reading:
+
+```c
+HAL_Delay(1000);
+```
+
+21. Build the project using **Project → Build Project**.
+
+22. Connect the NUCLEO-H753ZI board to the computer through the ST-LINK USB connection.
+
+23. Download and run the program on the NUCLEO-H753ZI.
+
+24. Open the Serial Monitor and select the appropriate ST-LINK Virtual COM Port.
+
+25. Set the serial communication parameters to:
+
+```text
+Baud Rate : 115200
+Data Bits : 8
+Parity    : None
+Stop Bits : 1
+```
+
+26. Observe the ADC value, voltage, and temperature displayed on the serial monitor.
+
+27. Warm the LM35 slightly by touching it with your finger. The sensor output voltage and corresponding temperature value should increase.
+
+### Expected Output
+
+```text
+========================================
+ EXPERIMENT 19 - LM35 TEMPERATURE
+ NUCLEO-H753ZI
+ LM35 -> PA0 -> ADC1 CHANNEL 16
+========================================
+
+ADC Value   = XXXXX
+Voltage     = XXX mV
+Voltage     = X.XXX V
+Temperature = XX C
+-------------------------
+```
+
+The readings are updated approximately once every second.
+
+### Result
+
+The LM35 temperature sensor was successfully interfaced with the NUCLEO-H753ZI. The analog output of the LM35 was read through **ADC1 Channel 16 at PA0**, converted into voltage and temperature, and the results were displayed through **USART3 at 115200 baud**.

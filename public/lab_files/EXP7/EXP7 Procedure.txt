@@ -1,0 +1,373 @@
+EXPERIMENT 7 – I2C 16×2 LCD WITH RELAY STATUS
+
+
+
+
+
+
+1. Create/Open STM32CubeIDE Project
+
+
+Open the NUCLEO-H753ZI project.
+Open the .ioc file.
+
+
+
+
+
+
+
+2. IOC Configuration
+
+
+Step 1: Configure I2C1
+Go to:
+Pinout & Configuration → Connectivity → I2C1
+Enable:
+I2C1 → I2C
+The pins should be:
+PB8 → I2C1_SCL
+PB9 → I2C1_SDA
+Set I2C speed to:
+100 kHz
+Use:
+Addressing Mode → 7-bit
+Keep the other settings at their CubeMX defaults unless your project already specifies otherwise.
+Step 2: Configure PB0
+Go to:
+System Core → GPIO
+Set:
+PB0 → GPIO_Output
+Configure:
+GPIO output level      → High
+GPIO mode              → Output Push Pull
+GPIO Pull-up/Pull-down → No pull-up and no pull-down
+Maximum output speed   → Low
+User Label             → RELAY_IN
+Step 3: Generate Code
+Click:
+Project → Generate Code
+
+
+
+
+
+
+
+
+
+
+3. Pin Connections
+
+
+LCD PCF8574 Backpack
+LCD/PCF8574	NUCLEO-H753ZI
+SDA	PB9
+SCL	PB8
+VCC	5V
+GND	GND
+Relay
+Relay Module	NUCLEO-H753ZI
+IN	PB0
+VCC	5V
+GND	GND
+
+
+
+
+
+
+
+
+
+
+
+4. Add LCD Code
+
+
+Open:
+Core → Src → main.c
+Inside:
+/* USER CODE BEGIN 0 */
+paste the following code:
+#define LCD_ADDR       (0x27 << 1)
+#define LCD_BACKLIGHT  0x08
+#define LCD_ENABLE     0x04
+#define LCD_RS         0x01
+
+static void LCD_Write4Bits(uint8_t data)
+{
+    uint8_t temp;
+
+    /* Enable LOW */
+    temp = data | LCD_BACKLIGHT;
+    HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, &temp, 1, 100);
+
+    /* Enable HIGH */
+    temp = data | LCD_BACKLIGHT | LCD_ENABLE;
+    HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, &temp, 1, 100);
+
+    HAL_Delay(1);
+
+    /* Enable LOW */
+    temp = data | LCD_BACKLIGHT;
+    HAL_I2C_Master_Transmit(&hi2c1, LCD_ADDR, &temp, 1, 100);
+
+    HAL_Delay(1);
+}
+
+
+static void LCD_Send(uint8_t data, uint8_t rs)
+{
+    uint8_t high;
+    uint8_t low;
+
+    high = data & 0xF0;
+    low = (data << 4) & 0xF0;
+
+    LCD_Write4Bits(high | rs);
+    LCD_Write4Bits(low | rs);
+}
+
+
+void LCD_SendCommand(uint8_t command)
+{
+    LCD_Send(command, 0x00);
+
+    if (command == 0x01 || command == 0x02)
+        HAL_Delay(3);
+    else
+        HAL_Delay(1);
+}
+
+
+void LCD_SendData(uint8_t data)
+{
+    LCD_Send(data, LCD_RS);
+}
+
+
+void LCD_Init(void)
+{
+    HAL_Delay(100);
+
+    LCD_Write4Bits(0x30);
+    HAL_Delay(10);
+
+    LCD_Write4Bits(0x30);
+    HAL_Delay(5);
+
+    LCD_Write4Bits(0x30);
+    HAL_Delay(2);
+
+    LCD_Write4Bits(0x20);
+    HAL_Delay(2);
+
+    /* 4-bit, 2-line, 5x8 font */
+    LCD_SendCommand(0x28);
+
+    /* Display OFF */
+    LCD_SendCommand(0x08);
+
+    /* Clear display */
+    LCD_SendCommand(0x01);
+
+    /* Entry mode */
+    LCD_SendCommand(0x06);
+
+    /* Display ON, cursor OFF */
+    LCD_SendCommand(0x0C);
+}
+
+
+void LCD_SetCursor(uint8_t row, uint8_t col)
+{
+    uint8_t address;
+
+    if (row == 0)
+        address = 0x80 + col;
+    else
+        address = 0xC0 + col;
+
+    LCD_SendCommand(address);
+}
+
+
+void LCD_Print(char *str)
+{
+    while (*str)
+    {
+        LCD_SendData((uint8_t)*str);
+        str++;
+    }
+}
+
+
+void LCD_PrintLine(char *str)
+{
+    uint8_t i = 0;
+
+    while (*str && i < 16)
+    {
+        LCD_SendData((uint8_t)*str);
+        str++;
+        i++;
+    }
+
+    while (i < 16)
+    {
+        LCD_SendData(' ');
+        i++;
+    }
+}
+
+
+void LCD_Clear(void)
+{
+    LCD_SendCommand(0x01);
+    HAL_Delay(3);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5. Add LCD Function Prototypes
+
+
+
+Inside:
+
+/* USER CODE BEGIN PFP */
+
+paste:
+
+void LCD_Init(void);
+void LCD_SendCommand(uint8_t command);
+void LCD_SendData(uint8_t data);
+void LCD_SetCursor(uint8_t row, uint8_t col);
+void LCD_Print(char *str);
+void LCD_PrintLine(char *str);
+void LCD_Clear(void);
+
+
+
+
+
+
+
+
+
+
+
+6. Main Program Code
+
+
+In main() keep the CubeMX-generated initialization code.
+
+After:
+
+MX_GPIO_Init();
+MX_I2C1_Init();
+
+add:
+
+/* Relay initially OFF */
+HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
+/* Initialize LCD */
+LCD_Init();
+
+/* Clear LCD */
+LCD_Clear();
+
+/* First row - fixed user information */
+LCD_SetCursor(0, 0);
+LCD_PrintLine("Sathvik Reddy");
+
+/* Second row - initial relay status */
+LCD_SetCursor(1, 0);
+LCD_PrintLine("Relay: OFF");
+
+HAL_Delay(1000);
+
+Then use this while (1):
+
+while (1)
+{
+    /* =========================================
+       RELAY ON
+       ========================================= */
+
+    HAL_GPIO_WritePin(
+        GPIOB,
+        GPIO_PIN_0,
+        GPIO_PIN_RESET
+    );
+
+    /* Update LCD immediately */
+    LCD_SetCursor(1, 0);
+    LCD_PrintLine("Relay: ON");
+
+    HAL_Delay(2000);
+
+
+    /* =========================================
+       RELAY OFF
+       ========================================= */
+
+    HAL_GPIO_WritePin(
+        GPIOB,
+        GPIO_PIN_0,
+        GPIO_PIN_SET
+    );
+
+    /* Update LCD immediately */
+    LCD_SetCursor(1, 0);
+    LCD_PrintLine("Relay: OFF");
+
+    HAL_Delay(2000);
+}
+
+
+
+
+
+
+
+
+
+7. Expected LCD Output
+
+
+
+Initially:
+
+Sathvik Reddy
+Relay: OFF
+
+After the relay turns ON:
+
+Sathvik Reddy
+Relay: ON
+
+After 2 seconds:
+
+Sathvik Reddy
+Relay: OFF
+
+This repeats continuously.
