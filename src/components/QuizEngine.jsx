@@ -204,7 +204,7 @@ export function QuizEngine({ onOpenReportModal, initialCourseCode }) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold mb-2">
-              <Award className="w-4 h-4" /> KLU Embedded Assessment Portal
+              <Award className="w-4 h-4" /> Embedded Assessment Portal
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-100">
               Interactive Hardware Knowledge & Quiz Engine
@@ -237,7 +237,7 @@ export function QuizEngine({ onOpenReportModal, initialCourseCode }) {
             <ShieldCheck className={`w-8 h-8 shrink-0 ${activePortal === 'human' ? 'text-emerald-400' : 'text-slate-500'}`} />
             <div>
               <div className="font-bold text-slate-200">Human-Curated Lab Assessments</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">26 Lab Manual evaluation tests authored by KLU faculty</div>
+              <div className="text-[11px] text-slate-400 mt-0.5">26 Lab Manual evaluation tests authored by faculty</div>
             </div>
           </button>
 

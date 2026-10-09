@@ -111,7 +111,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }) {
             <div className="text-slate-500 text-center py-6 space-y-3">
               <Zap className="w-8 h-8 text-cyan-500/50 mx-auto animate-pulse" />
               <p className="text-slate-400 text-xs">
-                Type keywords to search across <span className="text-cyan-400 font-bold">KLU EL&GE Courses</span>, <span className="text-emerald-400 font-bold">26 STM32 Experiments</span>, and <span className="text-purple-400 font-bold">Pinouts & Tools</span>.
+                Type keywords to search across <span className="text-cyan-400 font-bold">Courses</span>, <span className="text-emerald-400 font-bold">26 STM32 Experiments</span>, and <span className="text-purple-400 font-bold">Pinouts & Tools</span>.
               </p>
               <div className="flex flex-wrap justify-center gap-2 pt-2">
                 {['FreeRTOS', 'ADC DMA', 'ELGE-301', 'PWM Calculator', 'Cryptographic AES', 'PB0 Green LED'].map((tag) => (
@@ -139,7 +139,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }) {
             <div className="space-y-2">
               <div className="text-[10px] font-bold text-cyan-400 tracking-wider uppercase flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <GraduationCap className="w-3.5 h-3.5" /> KLU EL&GE Courses ({matchingCourses.length})
+                  <GraduationCap className="w-3.5 h-3.5" /> Courses ({matchingCourses.length})
                 </span>
                 <span className="text-slate-500">Human & AI Curriculum</span>
               </div>
@@ -271,7 +271,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }) {
         <div className="p-3 bg-slate-950 border-t border-slate-800 text-[10px] text-slate-500 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-            <span>eLearnTech@KLU Search Engine — Powered by Human & AI Indexing</span>
+            <span>eLearnTech Search Engine — Powered by Human & AI Indexing</span>
           </div>
           <span>Press ESC to close</span>
         </div>

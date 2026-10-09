@@ -11,12 +11,12 @@ export function BoardOverview({ onNavigate }) {
           <div className="flex items-center gap-3.5 mb-5">
             <img
               src="/logo-icon-transparent.png"
-              alt="eLearnTech @kl Emblem"
+              alt="eLearnTech Emblem"
               className="h-12 sm:h-14 w-auto object-contain filter drop-shadow-[0_0_12px_rgba(6,182,212,0.35)]"
             />
             <div>
               <div className="font-mono font-black text-slate-100 text-xl sm:text-2xl tracking-tight flex items-center gap-2">
-                eLearnTech<span className="text-cyan-400 font-extrabold">@kl</span>
+                eLearnTech
               </div>
               <div className="text-xs font-mono text-slate-400 font-semibold tracking-wide mt-0.5">
                 TECHNOLOGY ENABLED LEARNING & GLOBAL ENGAGEMENT
@@ -110,7 +110,7 @@ export function BoardOverview({ onNavigate }) {
               Human Expertise + AI-Powered Learning Portal
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              eLearnTech@KLU blends hand-crafted academic rigor from faculty with interactive AI quiz engines, hardware search, and firmware code analysis.
+              eLearnTech blends hand-crafted academic rigor from faculty with interactive AI quiz engines, hardware search, and firmware code analysis.
             </p>
           </div>
 
@@ -154,7 +154,7 @@ export function BoardOverview({ onNavigate }) {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong className="text-slate-100">Academic Assessment:</strong> Official printable lab evaluation report summaries for university evaluation.</span>
+                <span><strong className="text-slate-100">Academic Assessment:</strong> Official printable lab evaluation report summaries for course evaluation.</span>
               </li>
             </ul>
           </div>

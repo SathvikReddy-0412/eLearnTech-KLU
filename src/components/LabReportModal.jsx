@@ -6,7 +6,7 @@ export function LabReportModal({ isOpen, onClose }) {
   const [studentName, setStudentName] = useState('Alex Rivera');
   const [studentId, setStudentId] = useState('2026-EE-4091');
   const [courseName, setCourseName] = useState('ECE 432: Embedded Microcontroller Systems');
-  const [university, setUniversity] = useState('KLU - Department of Electrical & Computer Engineering');
+  const [university, setUniversity] = useState('Department of Electrical & Computer Engineering');
 
   if (!isOpen) return null;
 
@@ -31,7 +31,7 @@ export function LabReportModal({ isOpen, onClose }) {
             <Award className="w-5 h-5 text-cyan-400" /> Student Official Lab Progress Summary Report
           </h3>
           <p className="text-xs text-slate-400 mt-1">
-            Generate printable laboratory submission document for eLearnTech@KLU course evaluation
+            Generate printable laboratory submission document for eLearnTech course evaluation
           </p>
         </div>
 
@@ -42,12 +42,12 @@ export function LabReportModal({ isOpen, onClose }) {
             <div className="flex justify-center items-center gap-3">
               <img
                 src="/logo-icon-transparent.png"
-                alt="eLearnTech @kl Emblem"
+                alt="eLearnTech Emblem"
                 className="h-12 w-auto object-contain filter drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]"
               />
               <div className="text-left">
                 <div className="font-mono font-black text-slate-100 text-lg tracking-tight flex items-center gap-1.5">
-                  eLearnTech<span className="text-cyan-400 font-extrabold">@kl</span>
+                  eLearnTech
                 </div>
                 <div className="text-[10px] font-mono text-slate-400 font-semibold tracking-wide">
                   TECHNOLOGY ENABLED LEARNING & GLOBAL ENGAGEMENT

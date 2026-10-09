@@ -23,7 +23,7 @@ export function Courses({ onSelectLab, onLaunchQuiz }) {
         
         <div className="relative max-w-4xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold">
-            <GraduationCap className="w-4 h-4" /> KLU EL&GE Official Curriculum
+            <GraduationCap className="w-4 h-4" /> Official Curriculum
           </div>
           
           <h1 className="text-2xl sm:text-4xl font-black text-slate-100 tracking-tight">

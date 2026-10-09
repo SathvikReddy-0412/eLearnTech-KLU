@@ -1,4 +1,4 @@
-// Complete 26-Experiment Laboratory Manual for STM32 NUCLEO-H753ZI (eLearnTech@KLU)
+// Complete 26-Experiment Laboratory Manual for STM32 NUCLEO-H753ZI (eLearnTech)
 
 export const labExperiments = [
   {
@@ -789,7 +789,7 @@ int main(void)
 
   LCD_Init();
   LCD_SetCursor(0, 0);
-  LCD_SendString("eLearnTech @kl");
+  LCD_SendString("eLearnTech");
   LCD_SetCursor(1, 0);
   LCD_SendString("Relay: INITIALIZING");
   HAL_Delay(1500);
@@ -958,7 +958,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
 
-  char msg[] = "eLearnTech @kl — STM32H753ZI UART Test OK!\r\n";
+  char msg[] = "eLearnTech — STM32H753ZI UART Test OK!\r\n";
 
   while (1)
   {
@@ -2621,7 +2621,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_HASH_Init(void);
 
-uint8_t input_msg[] = "eLearnTech@kl STM32H753ZI Hardware Cryptography Test";
+uint8_t input_msg[] = "eLearnTech STM32H753ZI Hardware Cryptography Test";
 uint8_t sha256_output[32]; // 256 bits = 32 bytes
 
 int main(void)

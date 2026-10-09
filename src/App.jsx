@@ -88,11 +88,11 @@ export default function App() {
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <img
               src="/logo-icon-transparent.png"
-              alt="eLearnTech@KLU Emblem"
+              alt="eLearnTech Emblem"
               className="w-7 h-7 object-contain filter drop-shadow-[0_0_6px_rgba(6,182,212,0.3)]"
             />
             <span className="font-mono text-slate-300 font-bold">
-              eLearnTech<span className="text-cyan-400">@kl</span> — Koneru Lakshmaiah Education Foundation
+              eLearnTech — Interactive Embedded Systems Portal
             </span>
           </div>
 
@@ -105,7 +105,7 @@ export default function App() {
             >
               ST Official Datasheet <ExternalLink className="w-3 h-3" />
             </a>
-            <span className="text-cyan-400 font-semibold">KLU EL&GE</span>
+            <span className="text-cyan-400 font-semibold">Embedded Systems</span>
             <span className="text-slate-700">•</span>
             <div className="flex items-center gap-1 text-slate-400">
               <span className="text-slate-500">Mentor:</span>

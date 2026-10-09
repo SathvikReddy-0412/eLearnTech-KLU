@@ -40,7 +40,7 @@ export function LabViewer({ initialLabId }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState('ALL');
   const [completedLabs, setCompletedLabs] = useState(() => {
     try {
-      const saved = localStorage.getItem('klu_completed_labs');
+      const saved = localStorage.getItem('elearn_completed_labs');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -58,7 +58,7 @@ export function LabViewer({ initialLabId }) {
       ? completedLabs.filter((labId) => labId !== id)
       : [...completedLabs, id];
     setCompletedLabs(next);
-    localStorage.setItem('klu_completed_labs', JSON.stringify(next));
+    localStorage.setItem('elearn_completed_labs', JSON.stringify(next));
   };
 
   const lab = labExperiments.find((l) => l.id === selectedLabId) || labExperiments[0];

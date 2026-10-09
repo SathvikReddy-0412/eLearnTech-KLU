@@ -22,16 +22,16 @@ export function Navbar({ activeTab, setActiveTab, onOpenReportModal, onOpenSearc
           <div
             onClick={() => setActiveTab('overview')}
             className="flex items-center gap-3 cursor-pointer group py-1 shrink-0"
-            title="eLearnTech@KLU — Home Overview"
+            title="eLearnTech — Home Overview"
           >
             <img
               src="/logo-icon-transparent.png"
-              alt="eLearnTech @kl Emblem"
+              alt="eLearnTech Emblem"
               className="h-10 sm:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-[0_0_8px_rgba(6,182,212,0.35)]"
             />
             <div className="flex flex-col justify-center">
               <div className="font-mono font-black text-slate-100 text-sm sm:text-base tracking-wide flex items-center gap-1.5 leading-tight">
-                eLearnTech<span className="text-cyan-400 font-black">@kl</span>
+                eLearnTech
               </div>
               <div className="text-[9px] sm:text-[10px] font-mono text-slate-400 font-medium tracking-tight hidden md:block">
                 TECHNOLOGY ENABLED LEARNING & GLOBAL ENGAGEMENT

@@ -1,11 +1,11 @@
-// KLU EL&GE Embedded Systems & Microcontroller Course Catalog
+// Embedded Systems & Microcontroller Course Catalog
 
 export const coursesData = [
   {
     id: "elge-301",
     code: "ELGE-301",
     title: "ARM Cortex-M7 Microcontroller Architecture & Interfacing",
-    department: "Department of Electronics & Global Engineering (EL&GE)",
+    department: "Department of Electronics & Computer Engineering",
     level: "Undergraduate / Core",
     credits: "4 Credits (3 Lecture + 2 Lab)",
     mentor: "Dr. Aswinkumer S V",
